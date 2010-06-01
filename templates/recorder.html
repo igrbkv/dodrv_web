@@ -1,0 +1,21 @@
+$def with (rf, pfs, ef, sf, ff, _title)
+$var title: $_title
+<form action="/config/recorder" method=POST>
+    $:rf.render()
+    <p>Устройства</p>
+    <table>
+    $for p in pfs:
+        <tr>
+        $for i in p.inputs:
+            <th><label for="$i.id">$i.description</label></th><td>$:i.render()</td>        
+        </tr>
+    </table>
+    <p>Запись процесса</p>
+    $:ef.render()
+    <p>Самописец</p>
+    $:sf.render()
+    <p>Формат файлов</p>
+    $:ff.render()
+
+    <p><button type="submit" id="Записать" name="Записать">Записать</button></p>
+</form>

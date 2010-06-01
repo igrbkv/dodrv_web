@@ -1,0 +1,154 @@
+img { border: none; }
+
+body {
+    min-width: 600px;
+    background: #fbf8f1
+    padding: 0 10px;
+    color: #555;
+    font-family: sans-serif;
+}
+
+/* Header */
+#header {
+    height: 174px;
+}
+
+#header img {
+    padding: 5px 0 0 10px;
+}
+
+#header .blurb {
+    position: absolute;
+    left: 32%;
+    padding-top: 25px;
+    font-size: 120%;
+}
+#menuContainer ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+#menu ul,
+#submenu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0 30px;
+    float: right;
+}
+#menu ul li,
+#submenu ul li {
+    display: block;
+    float: right;
+    margin: 0 3px;
+    padding: 0;
+    text-align: center;
+    font-size: 13px;
+    line-height: 26px;
+}
+
+#menu ul li.selected {
+    background-color: #1793d1;
+}
+#submenu ul li.selected {
+    background-color: #333;
+}
+#menu ul li a,
+#submenu ul li a {
+    display: block;
+    padding: 0 8px;
+}
+
+#menu {
+    position: absolute;
+    top: 110px;
+    right: 0;
+    width: 100%;
+    background-color: #333;
+}
+#submenu {
+    position: absolute;
+    top: 142px;
+    right: 0;
+    width: 100%;
+    background-color: #1793d1;
+}
+#menu ul,
+#submenu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0 30px;
+    float: right;
+}
+#submenu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0 30px;
+    float: right;
+}
+#menu ul li,
+#submenu ul li {
+    display: block;
+    float: right;
+    margin: 0 3px;
+    padding: 0;
+    text-align: center;
+    font-size: 13px;
+    line-height: 26px;
+}
+
+#menu ul li.selected {
+    background-color: #1793d1;
+}
+#submenu ul li.selected {
+    background-color: #333;
+}
+#menu ul li a,
+#submenu ul li a {
+    display: block;
+    padding: 0 8px;
+    color: #fff;
+    font-weight: bold;
+    text-decoration: none;
+}
+#menu ul li a:hover {
+    background-color: #1793d1;
+}
+
+/* content */
+#content {
+    width: 100%;
+    text-align: left;
+    clear: both;
+}
+
+.box {
+    padding: 5px;
+}
+
+/* login form */
+.wrong {
+    color: red;
+    margin-left: 5px;
+    font-size: small;
+}
+
+.pgbox {
+    margin-bottom: 1%;
+    background-color: #fff;
+    border: 2px solid #ddd;
+    text-align: left;
+    padding: 3px;
+}
+
+.pgboxtitle {
+    border: 2px solid #ddd;
+    border-top: 1px solid #fff;
+    border-left: 1px solid #fff;
+    background-color: #f1f2f4;
+    text-align: left;
+    padding: 2px 10px 2px 10px;
+}
+
+.pgboxbody {
+    padding: 10px;
+}

@@ -1,0 +1,59 @@
+$def with (content)
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" lang="en">
+    <head>
+        <title>
+            $if content.title:
+                $recorderName()
+                $if content.title:
+                    &nbsp;-&nbsp;$content.title
+        </title>
+        <link rel="stylesheet" type="text/css" 
+    href="/static/defaults.css">
+        <link rel="shortcut icon" 
+    href="/static/favicon.ico">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+    <body>
+        <div id="header">
+            <span class="logo"><a href="/" title="В начало"><img src="/static/parma.png" alt=""/></a></span>
+            <span class="blurb"><a>$recorderName()</a></span>
+        <div id="menuContainer"><ul>
+            $# Main menu
+            <div id="menu"><ul>
+            $ top = None        
+            $for i in xrange(len(getMenu())):
+                $ curPath = getMenu()[i][1][len(getMenu()[i][1])-1][1]
+                $if isCurPath(curPath):
+                    $ top = getMenu()[i][1]
+                    <li class="selected">
+                $else:
+                    <li>
+                <a href="$curPath">$getMenu()[i][0]</a>
+                </li>
+    </ul></div>
+        $# Submenu
+        <div id="submenu">
+            <ul>
+            $if top and top[0][0]:
+                $for i in xrange(len(top)):
+                    <li><a href="$top[i][1]">$top[i][0]</a></li>
+            $else:
+                <li>&zwnj;</li>
+            </ul>
+        </div>
+        </ul></div>
+        </div>
+        <div id="content">
+            <div class="pgbox">
+                $if content.title:
+                    <div class="pgboxtitle">
+                            $content.title
+                    </div>
+                <div class="pgboxbody">
+                    $:content
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

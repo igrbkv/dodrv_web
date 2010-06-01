@@ -1,0 +1,19 @@
+$def with(xml)
+<?xml version="1.0" encoding="UTF-8"?>
+<recorder $:attrs(xml)>
+    <ADCs>
+        $for k, v in xml['ADCs'].iteritems():
+            <ADC name="$k" $:attrs(v)>
+    </ADCs>
+    <devices>
+        $for k, v in xml['device'].iteritems():
+            <device id="$k" $:attrs(v)>
+            </device>
+    </devices>
+    <opc $:attrs(xml['opc'])/>
+    <emergency $:attrs(xml['emergency'])/>
+    <self-recorder $:attrs(xml['self-recorder'])/>
+    <data_formats $:attrs(xml['data_formats'])>
+        <comtrade $:attrs(xml['data_formats']['comtrade'])/>
+    </data_formats>
+</recorder>

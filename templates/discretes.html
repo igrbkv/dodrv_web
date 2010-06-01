@@ -1,0 +1,14 @@
+$def with (df, title=None)
+$var title: $title
+<form action="/config/discretes/$df.channel" method=POST>
+    <p>Канал
+    $for ci in xrange(df.channels):
+            $if ci == int(df.channel):
+                <a> [$ci]</a>
+            $else:
+                <a href="/config/discretes/$ci"> $ci</a>
+    </p>
+    $:df.render()
+
+    $#<p><button type="submit" id="Записать" name="Записать">Записать</button></p>
+</form>
