@@ -38,9 +38,14 @@ badd +19 session.py
 badd +47 login.py
 badd +39 templates/layout.html
 badd +11 static/defaults.css
-badd +0 config.xml
+badd +5 config.xml
+badd +156 recorder.py
+badd +8 templates/recorder.html
+badd +0 discretes.py
+badd +26 templates/discretes.html
+badd +81 configxml.py
 silent! argdel *
-edit config.py
+edit discretes.py
 set splitbelow splitright
 wincmd _ | wincmd |
 vsplit
@@ -146,15 +151,15 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 9 - ((8 * winheight(0) + 13) / 26)
+let s:l = 18 - ((11 * winheight(0) + 13) / 26)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-9
-normal! 0
+18
+normal! 08l
 wincmd w
 argglobal
-edit config.xml
+edit templates/discretes.html
 setlocal keymap=
 setlocal noarabic
 setlocal noautoindent
@@ -166,7 +171,7 @@ setlocal nocindent
 setlocal cinkeys=0{,0},0),:,0#,!^F,o,O,e
 setlocal cinoptions=
 setlocal cinwords=if,else,while,do,for,switch
-setlocal comments=s:<!--,m:\ \ \ \ \ ,e:-->
+setlocal comments=s:<!--,m:\ \ \ \ ,e:-->
 setlocal commentstring=<!--%s-->
 setlocal complete=.,w,b,u,t,i,k/home/igor/.vim/pydiction-0.5/pydiction
 setlocal completefunc=
@@ -179,8 +184,8 @@ setlocal nodiff
 setlocal equalprg=
 setlocal errorformat=
 setlocal expandtab
-if &filetype != 'xml'
-setlocal filetype=xml
+if &filetype != 'html'
+setlocal filetype=html
 endif
 setlocal foldcolumn=0
 setlocal foldenable
@@ -193,15 +198,15 @@ setlocal foldminlines=1
 setlocal foldnestmax=20
 setlocal foldtext=foldtext()
 setlocal formatexpr=
-setlocal formatoptions=croql
+setlocal formatoptions=tcq
 setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
 setlocal grepprg=
 setlocal iminsert=0
 setlocal imsearch=0
 setlocal include=
 setlocal includeexpr=
-setlocal indentexpr=XmlIndentGet(v:lnum,1)
-setlocal indentkeys=o,O,*<Return>,<>>,<<>,/,{,}
+setlocal indentexpr=HtmlIndentGet(v:lnum)
+setlocal indentkeys=o,O,*<Return>,<>>,{,}
 setlocal noinfercase
 setlocal iskeyword=@,48-57,_,192-255,.,(
 setlocal keywordprg=
@@ -209,13 +214,13 @@ setlocal nolinebreak
 setlocal nolisp
 setlocal nolist
 setlocal makeprg=
-setlocal matchpairs=(:),{:},[:]
+setlocal matchpairs=(:),{:},[:],<:>
 setlocal modeline
 setlocal modifiable
 setlocal nrformats=octal,hex
 setlocal nonumber
 setlocal numberwidth=4
-setlocal omnifunc=xmlcomplete#CompleteTags
+setlocal omnifunc=htmlcomplete#CompleteTags
 setlocal path=
 setlocal nopreserveindent
 setlocal nopreviewwindow
@@ -236,8 +241,8 @@ setlocal statusline=
 setlocal suffixesadd=
 setlocal swapfile
 setlocal synmaxcol=3000
-if &syntax != 'xml'
-setlocal syntax=xml
+if &syntax != 'html'
+setlocal syntax=html
 endif
 setlocal tabstop=4
 setlocal tags=
@@ -248,13 +253,14 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 3 - ((2 * winheight(0) + 13) / 26)
+let s:l = 48 - ((23 * winheight(0) + 13) / 26)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-3
-normal! 0
+48
+normal! 07l
 wincmd w
+2wincmd w
 exe 'vert 1resize ' . ((&columns * 52 + 52) / 104)
 exe 'vert 2resize ' . ((&columns * 51 + 52) / 104)
 tabnext 1

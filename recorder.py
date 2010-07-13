@@ -154,7 +154,7 @@ class Recorder:
 
     def GET(self):
         web.header('Content-Type', 'text/html; charset= utf-8')
-        
+        web.header('Cache-Control', 'no-cache, must-revalidate')        
         rf = recorderForm()
         rf.id.value = xml['id']
         rf.stationName.value = xml['station_name']

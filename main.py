@@ -20,6 +20,7 @@ urls = (
     '/config/password', 'login.Password',
     '/config/recorder', 'recorder.Recorder',
     '/config/discretes/(\d+)', 'discretes.Discretes',
+    '/config/discrete/(\d+)/(\d+)', 'discrete.Discrete',
     '/config/analogs/(\d+)', 'analogs.Analogs',
 )
 

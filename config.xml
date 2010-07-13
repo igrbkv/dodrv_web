@@ -58,7 +58,7 @@
     <devices>
         <device in_use="yes" id="0" sample_rate="1800" frequency="50" analogs="16" discretes="32" skew="yes">
             <analogs>
-                <analog id="0" in_use="yes" dc_component="0" ADC="MV-200" harmonic="yes" alias="Ua" coef1="10.0" phase="A">
+                <analog id="0" in_use="yes" dc_component="0" ADC="MV-200" sinusoid="yes" alias="Ua" coef1="10.0" phase="A" circuit_component="">
                     <rms integration_interval_ms="20">
                     <!--
                         <analog_emergency top_threshold="150.0" bottom_threshold="" max_duration_ms=""/>
@@ -93,7 +93,7 @@
                     <reactive_power integration_interval_ms="20" id_current="4">
                     </reactive_power>
                 </analog>
-                <analog id="1" in_use="yes" dc_component="0" ADC="MV-200" harmonic="yes" alias="" coef1="1.0" phase="B" circuit_component="">
+                <analog id="1" in_use="yes" dc_component="0" ADC="MV-200" sinusoid="yes" alias="" coef1="1.0" phase="B" circuit_component="">
                     <!--
                     <rms integration_interval_ms="20">
                         <analog_emergency top_threshold="" top_return_threshold="" bottom_threshold="" bottom_return_threshold=""/>
@@ -120,7 +120,7 @@
                     </reactive_power>
                     -->
                 </analog>
-                <analog id="2" in_use="yes" dc_component="0" ADC="MV-200" alias="" coef1="1.0" phase="C" circuit_component="" harmonic="yes">
+                <analog id="2" in_use="yes" dc_component="0" ADC="MV-200" alias="" coef1="1.0" phase="C" circuit_component="" sinusoid="yes">
                     <!--
                     <rms integration_interval_ms="20">
                         <analog_emergency top_threshold="" bottom_threshold="" after_history_ms="" max_duration_ms=""/>
@@ -148,23 +148,23 @@
                     -->
                 </analog>
                 <!--
-                <analog id="3" in_use="yes" dc_component="0" ADC="MV-200" alias="" coef1="1.0" phase="A" circuit_component="" harmonic="yes"/>
+                <analog id="3" in_use="yes" dc_component="0" ADC="MV-200" alias="" coef1="1.0" phase="A" circuit_component="" sinusoid="yes"/>
                 -->
-                <analog id="4" in_use="yes" dc_component="0" ADC="MA-5/8" alias="" coef1="1.0" phase="A" circuit_component="" harmonic="yes">
+                <analog id="4" in_use="yes" dc_component="0" ADC="MA-5/8" alias="" coef1="1.0" phase="A" circuit_component="" sinusoid="yes">
                     <rms integration_interval_ms="20"/>
                 </analog>
                 <!--
-                <analog id="5" in_use="yes" dc_component="0" ADC="MV-200" alias="" coef1="1.0" phase="A" circuit_component="" harmonic="yes"/>
-                <analog id="6" in_use="yes" dc_component="0" ADC="MV-200" alias="" coef1="1.0" phase="A" circuit_component="" harmonic="yes"/>
-                <analog id="7" in_use="yes" dc_component="0" ADC="MV-200" alias="" coef1="1.0" phase="A" circuit_component="" harmonic="yes"/>
-                <analog id="8" in_use="yes" dc_component="0" ADC="MT-100" alias="" coef1="1.0" phase="A" circuit_component="" harmonic="yes"/>
-                <analog id="9" in_use="yes" dc_component="0" ADC="MT-100" alias="" coef1="1.0" phase="A" circuit_component="" harmonic="yes"/>
-                <analog id="10" in_use="yes" dc_component="0" ADC="MT-100" alias="" coef1="1.0" phase="A" circuit_component="" harmonic="yes"/>
-                <analog id="11" in_use="yes" dc_component="0" ADC="MT-100" alias="" coef1="1.0" phase="A" circuit_component="" harmonic="yes"/>
-                <analog id="12" in_use="yes" dc_component="0" ADC="MT-100" alias="" coef1="1.0" phase="A" circuit_component="" harmonic="yes"/>
-                <analog id="13" in_use="yes" dc_component="0" ADC="MT-100" alias="" coef1="1.0" phase="A" circuit_component="" harmonic="yes"/>
-                <analog id="14" in_use="yes" dc_component="0" ADC="MT-100" alias="" coef1="1.0" phase="A" circuit_component="" harmonic="yes"/>
-                <analog id="15" in_use="yes" dc_component="0" ADC="MT-100" alias="" coef1="1.0" phase="A" circuit_component="" harmonic="yes"/>
+                <analog id="5" in_use="yes" dc_component="0" ADC="MV-200" alias="" coef1="1.0" phase="A" circuit_component="" sinusoid="yes"/>
+                <analog id="6" in_use="yes" dc_component="0" ADC="MV-200" alias="" coef1="1.0" phase="A" circuit_component="" sinusoid="yes"/>
+                <analog id="7" in_use="yes" dc_component="0" ADC="MV-200" alias="" coef1="1.0" phase="A" circuit_component="" sinusoid="yes"/>
+                <analog id="8" in_use="yes" dc_component="0" ADC="MT-100" alias="" coef1="1.0" phase="A" circuit_component="" sinusoid="yes"/>
+                <analog id="9" in_use="yes" dc_component="0" ADC="MT-100" alias="" coef1="1.0" phase="A" circuit_component="" sinusoid="yes"/>
+                <analog id="10" in_use="yes" dc_component="0" ADC="MT-100" alias="" coef1="1.0" phase="A" circuit_component="" sinusoid="yes"/>
+                <analog id="11" in_use="yes" dc_component="0" ADC="MT-100" alias="" coef1="1.0" phase="A" circuit_component="" sinusoid="yes"/>
+                <analog id="12" in_use="yes" dc_component="0" ADC="MT-100" alias="" coef1="1.0" phase="A" circuit_component="" sinusoid="yes"/>
+                <analog id="13" in_use="yes" dc_component="0" ADC="MT-100" alias="" coef1="1.0" phase="A" circuit_component="" sinusoid="yes"/>
+                <analog id="14" in_use="yes" dc_component="0" ADC="MT-100" alias="" coef1="1.0" phase="A" circuit_component="" sinusoid="yes"/>
+                <analog id="15" in_use="yes" dc_component="0" ADC="MT-100" alias="" coef1="1.0" phase="A" circuit_component="" sinusoid="yes"/>
            -->
             </analogs>
             <discretes>
@@ -187,7 +187,6 @@
                         -->
                     </trigger>
                 </discrete>
-                <!--
                 <discrete id="2" in_use="no" inverted="yes" alias="" phase="" circuit_component=""/>
                 <discrete id="3" in_use="no" inverted="yes" alias="" phase="" circuit_component=""/>
                 <discrete id="4" in_use="no" inverted="yes" alias="" phase="" circuit_component=""/>
@@ -218,7 +217,6 @@
                 <discrete id="29" in_use="no" inverted="yes" alias="" phase="" circuit_component=""/>
                 <discrete id="30" in_use="no" inverted="yes" alias="" phase="" circuit_component=""/>
                 <discrete id="31" in_use="no" inverted="yes" alias="" phase="" circuit_component=""/>
-                -->
             </discretes>
         </device>
     </devices>

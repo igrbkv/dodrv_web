@@ -1,14 +1,55 @@
 $def with(xml)
+
 <?xml version="1.0" encoding="UTF-8"?>
 <recorder $:attrs(xml)>
     <ADCs>
-        $for k, v in xml['ADCs'].iteritems():
-            <ADC name="$k" $:attrs(v)>
+    $for k, v in xml['ADCs'].iteritems():
+        <ADC name="$k" $:attrs(v)/>
     </ADCs>
     <devices>
-        $for k, v in xml['device'].iteritems():
-            <device id="$k" $:attrs(v)>
-            </device>
+    $for k, v in xml['device'].iteritems():
+        <device id="$k" $:attrs(v)>
+            <analogs>
+                $for a in v['analog'].itervalues():
+                    $ filters = {}
+                    $for fn in ('rms', 'zero_phase_sequence', 'positive_phase_sequence', 'negative_phase_sequence', 'harmonic', 'active_power', 'reactive_power'):
+                        $ f = a.pop(fn, None)
+                        $if f != None:
+                            $filters.update({fn: f})
+                    <analog $:attrs(a)>
+                        $for fk, fv in filters.iteritems():
+                            $ handlers = {}
+                            $for hn in ('analog_emergency', 'analog_self-recorder', 'analog_opc'):
+                                $ h = fv.pop(hn, None)
+                                $if h != None:
+                                    $handlers.update({hn: h})
+                            <$fk $:attrs(fv)>
+                                $for hk, hv in handlers.iteritems():
+                                    <$hk $:attrs(hv)/>
+                            </$fk>
+                    </analog>
+            </analogs>
+            <discretes>
+                $for d in v['discrete'].itervalues():
+                    $ filters = {}
+                    $for fn in ('trigger',):
+                        $ f = d.pop(fn, None)
+                        $if f != None:
+                            $filters.update({fn: f})
+                    <discrete $:attrs(d)>
+                        $for fk, fv in filters.iteritems():
+                            $ handlers = {} 
+                            $for hn in ('discrete_emergency', 'discrete_self-recorder', 'discrete_opc'):
+                                $ h = fv.pop(hn, None)
+                                $if h != None:
+                                    $handlers.update({hn: h})
+                            <$fk $:attrs(fv)>
+                                $for hk, hv in handlers.iteritems():
+                                    <$hk $:attrs(hv)/>
+                            </$fk>
+                    </discrete>
+            </discretes>
+        </device>
     </devices>
     <opc $:attrs(xml['opc'])/>
     <emergency $:attrs(xml['emergency'])/>
