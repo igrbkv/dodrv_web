@@ -13,16 +13,14 @@ $def with(xml)
                 $for a in v['analog'].itervalues():
                     $ filters = {}
                     $for fn in ('rms', 'zero_phase_sequence', 'positive_phase_sequence', 'negative_phase_sequence', 'harmonic', 'active_power', 'reactive_power'):
-                        $ f = a.pop(fn, None)
-                        $if f != None:
-                            $filters.update({fn: f})
+                        $if fn in a.keys():
+                            $filters.update({fn: a[fn]})
                     <analog $:attrs(a)>
                         $for fk, fv in filters.iteritems():
                             $ handlers = {}
                             $for hn in ('analog_emergency', 'analog_self-recorder', 'analog_opc'):
-                                $ h = fv.pop(hn, None)
-                                $if h != None:
-                                    $handlers.update({hn: h})
+                                $if hn in fv.keys():
+                                    $handlers.update({hn: fv[hn]})
                             <$fk $:attrs(fv)>
                                 $for hk, hv in handlers.iteritems():
                                     <$hk $:attrs(hv)/>
@@ -33,16 +31,14 @@ $def with(xml)
                 $for d in v['discrete'].itervalues():
                     $ filters = {}
                     $for fn in ('trigger',):
-                        $ f = d.pop(fn, None)
-                        $if f != None:
-                            $filters.update({fn: f})
+                        $if fn in d.keys():
+                            $filters.update({fn: d[fn]})
                     <discrete $:attrs(d)>
                         $for fk, fv in filters.iteritems():
                             $ handlers = {} 
                             $for hn in ('discrete_emergency', 'discrete_self-recorder', 'discrete_opc'):
-                                $ h = fv.pop(hn, None)
-                                $if h != None:
-                                    $handlers.update({hn: h})
+                                $if hn in fv.keys():
+                                    $handlers.update({hn: fv[hn]})
                             <$fk $:attrs(fv)>
                                 $for hk, hv in handlers.iteritems():
                                     <$hk $:attrs(hv)/>

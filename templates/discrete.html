@@ -1,0 +1,9 @@
+$def with (df, ff, title=None)
+$var title: $title
+
+<form action="/config/discrete/$df.dev/$df.id" method=POST>
+    $:df.render()
+    <p>Фильтр сигнала</p>
+    $:ff.render()
+    <p><button type="submit" id="Записать" name="Записать">Применить</button></p>
+</form>

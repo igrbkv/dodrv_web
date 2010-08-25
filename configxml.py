@@ -88,7 +88,7 @@ class ConfigParser(xml.sax.ContentHandler):
             self.curFilter = tag
          
         elif tag == 'analog_emergency':
-            self.recorder['device'][self.curDevice]['analog'][self.curAnalog][self.curFilter][tag] = self._getObj(attr, ('top_threshold', 'bottom_threshold', 'max_duration'))
+            self.recorder['device'][self.curDevice]['analog'][self.curAnalog][self.curFilter][tag] = self._getObj(attr, ('top_threshold', 'bottom_threshold', 'max_duration_ms'))
         
         elif tag == 'analog_self-recorder':
             self.recorder['device'][self.curDevice]['analog'][self.curAnalog][self.curFilter][tag] = self._getObj(attr, ('analog_delta_percent',))

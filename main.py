@@ -22,6 +22,7 @@ urls = (
     '/config/discretes/(\d+)', 'discretes.Discretes',
     '/config/discrete/(\d+)/(\d+)', 'discrete.Discrete',
     '/config/analogs/(\d+)', 'analogs.Analogs',
+    '/config/analog/(\d+)/(\d+)', 'analog.Analog',
 )
 
 

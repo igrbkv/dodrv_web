@@ -1,0 +1,21 @@
+$def with (analog, rms, zero, positive, negative, harmonic, active, reactive, title=None)
+$var title: $title
+
+<form action="/config/analog/$analog.dev/$analog.id" method=POST>
+    $:analog.render()
+    <p>Фильтр действующего значения</p>
+    $:rms.render()
+    <p>Фильтр нулевой последовательности</p>
+    $:zero.render()
+    <p>Фильтр прямой последовательности</p>
+    $:positive.render()
+    <p>Фильтр обратной последовательности</p>
+    $:negative.render()
+    <p>Фильтр гармоники</p>
+    $:harmonic.render()
+    <p>Фильтр активной мощности</p>
+    $:active.render()
+    <p>Фильтр реактивной мощности</p>
+    $:reactive.render()
+    <p><button type="submit" id="Записать" name="Записать">Применить</button></p>
+</form>

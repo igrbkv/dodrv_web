@@ -5,28 +5,19 @@ $def showTableHeader():
     $#FIXME выделить заголовки цветом, 
     $#например сделать попеременно двухцветными 
     <tr>
-    <th rowspan="2" class="checkbox"></th>
-	$for orderName, orderBy in [('№', 'id'), ('Имя', 'alias'), ('Инвертирован', 'inverted'), ('Фаза', 'phase'), ('Компонент эл.сети', 'circuit_component')]:
-        <th rowspan="2" id="$orderBy">$orderName</th>
-    <th colspan="3" align="center">Запись в</th>
-    <th rowspan="2" class="button"></th>
-    </tr>
-    <tr>
-        <th>файл аварии</th>
-        <th>самописец</th> 
-        <th>OPC</th> 
+    <th class="checkbox"></th>
+	$for orderName, orderBy in [('№', 'id'), ('Имя', 'alias'), ('Фаза', 'phase'), ('Компонент', 'circuit_component'), ('Инвертирован', 'inverted'), ('Пуск', 'emergency'), ('Самописец', 'self-recorder'), ('OPC', 'opc')]:
+        <th id="$orderBy">$orderName</th>
     </tr>
 
 $def keyExist(key, dic):
     $if key in dic.keys():
-        Да
-    $else:
-        Нет
+        <a><img src="/static/tick.png"/></a>
 
-<form action="/config/discretes/$df.channel" method=POST>
+<form action="/config/discretes/$df.dev" method=POST>
     <p>Канал
-    $for ci in xrange(df.channels):
-            $if ci == int(df.channel):
+    $for ci in xrange(df.devs):
+            $if ci == int(df.dev):
                 <a> [$ci]</a>
             $else:
                 <a href="/config/discretes/$ci"> $ci</a>
@@ -34,17 +25,17 @@ $def keyExist(key, dic):
     <table>
         $:showTableHeader()
         $for cb in df.inputs:
-            $ d = cb.value
+            $ d = cb.data
             <tr>
             <td>$:cb.render()</td>
-            <td><a href="/config/discrete/$df.channel/$d['id']">$d['id']</a></td>
+            <td><a href="/config/discrete/$df.dev/$d['id']">$d['id']</a></td>
             <td>$d['alias']</td>
-            <td>
-                $ c = ('Да', 'Нет')[('yes', 'no').index(d['inverted'])]
-                $c
-            </td>
             <td>$d['phase']</td>
             <td>$d['circuit_component']</td>
+            <td>
+                $if d['inverted'] == 'yes':
+                    <a><img src="/static/tick.png"/></a>
+            </td>
             $if 'trigger' in d.keys():
                 <td>
                     $:keyExist('discrete_emergency', d['trigger'])
@@ -53,17 +44,14 @@ $def keyExist(key, dic):
                     $:keyExist('discrete_self-recorder', d['trigger'])
                 </td>
                 <td>
-                    $:keyExist('discrete_emergency', d['trigger'])
+                    $:keyExist('discrete_opc', d['trigger'])
                 </td>
             $else:
-                <td>Нет</td>
-                <td>Нет</td>
-                <td>Нет</td>
-                <td>
-                    $#<!--input button>Редактировать<-->
-                </td>
+                <td></td>
+                <td></td>
+                <td></td>
             </tr>
     </table>
 
-    <p><button type="submit" id="Записать" name="Записать">Записать</button></p>
+    <p><button type="submit" id="Записать" name="Записать">Применить</button></p>
 </form>

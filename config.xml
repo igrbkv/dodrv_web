@@ -147,13 +147,10 @@
                     </reactive_power>
                     -->
                 </analog>
-                <!--
                 <analog id="3" in_use="yes" dc_component="0" ADC="MV-200" alias="" coef1="1.0" phase="A" circuit_component="" sinusoid="yes"/>
-                -->
                 <analog id="4" in_use="yes" dc_component="0" ADC="MA-5/8" alias="" coef1="1.0" phase="A" circuit_component="" sinusoid="yes">
                     <rms integration_interval_ms="20"/>
                 </analog>
-                <!--
                 <analog id="5" in_use="yes" dc_component="0" ADC="MV-200" alias="" coef1="1.0" phase="A" circuit_component="" sinusoid="yes"/>
                 <analog id="6" in_use="yes" dc_component="0" ADC="MV-200" alias="" coef1="1.0" phase="A" circuit_component="" sinusoid="yes"/>
                 <analog id="7" in_use="yes" dc_component="0" ADC="MV-200" alias="" coef1="1.0" phase="A" circuit_component="" sinusoid="yes"/>
@@ -165,26 +162,21 @@
                 <analog id="13" in_use="yes" dc_component="0" ADC="MT-100" alias="" coef1="1.0" phase="A" circuit_component="" sinusoid="yes"/>
                 <analog id="14" in_use="yes" dc_component="0" ADC="MT-100" alias="" coef1="1.0" phase="A" circuit_component="" sinusoid="yes"/>
                 <analog id="15" in_use="yes" dc_component="0" ADC="MT-100" alias="" coef1="1.0" phase="A" circuit_component="" sinusoid="yes"/>
-           -->
             </analogs>
             <discretes>
                 <!--<discretes_opc/>-->
                 <discrete id="0" in_use="yes" inverted="yes" alias="Вкл." phase="" circuit_component="">
                     <trigger pulse_duration_ms="0" chatter_period_ms="0" chatter_suspend_threshold="0" chatter_resume_threshold="0">
-                        <!--
                         <discrete_emergency/>
                         <discrete_opc/>
                         <discrete_self-recorder/>
-                        -->
                     </trigger>
                 </discrete>
                 <discrete id="1" in_use="yes" inverted="yes" alias="" phase="" circuit_component="">
                      <trigger pulse_duration_ms="0" chatter_period_ms="0" chatter_suspend_threshold="0" chatter_resume_threshold="0">
-                         <!--
                         <discrete_emergency/>
                         <discrete_opc/>
                         <discrete_self-recorder/>
-                        -->
                     </trigger>
                 </discrete>
                 <discrete id="2" in_use="no" inverted="yes" alias="" phase="" circuit_component=""/>
