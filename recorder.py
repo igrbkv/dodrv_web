@@ -19,7 +19,7 @@ recorderForm = form.Form(
         form.Validator(notes[0], lambda i: int(i) >= 0 and int(i) < 100),
         description = 'Идентификатор'),
     form.Textbox('name', description = 'Имя регистратора'),
-    form.Textbox('stationName', description = 'Энергообъект'),
+    form.Textbox('station_name', description = 'Энергообъект'),
     form.Dropdown('type', [xml['type'],], description = 'Тип'))
 
 def createPovForms():
@@ -34,24 +34,24 @@ def createPovForms():
 povForms = createPovForms()
 
 emergencyForm = form.Form(
-    form.Dropdown('prehistoryMs', ['0', '100', '200', '500', '1000'], description = 'Предыстория (мс)'),
-    form.Dropdown('afterHistoryMs', ['0', '100', '500', '1000', '5000', '10000'], description = 'Послеистория (мс)'),
-    form.Textbox('maxFileLengthS',  
+    form.Dropdown('prehistory_ms', ['0', '100', '200', '500', '1000'], description = 'Предыстория (мс)'),
+    form.Dropdown('after_history_ms', ['0', '100', '500', '1000', '5000', '10000'], description = 'Послеистория (мс)'),
+    form.Textbox('max_file_length_s',  
         form.Validator(notes[1], bool),
         form.regexp('\d+', notes[1]),
         form.Validator(notes[1], lambda i: int(i) >= 0 and int(i) <= 60),
         description = 'Макс. длина файла аварии (с)'),
-    form.Dropdown('maxStorageTimeDay', ['0', '1', '3', '8', '30', '60'], description = 'Макс.время хранения (дней)'))
+    form.Dropdown('max_storage_time_day', ['0', '1', '3', '8', '30', '60'], description = 'Макс.время хранения (дней)'))
 
 selfRecorderForm = form.Form(
-    form.Dropdown('liveUpdateMs', ['1000', '2000', '5000', '10000'], description = 'Контрольный период записи(мс)'),
-    form.Textbox('analogDeltaPercent', 
+    form.Dropdown('live_update_ms', ['1000', '2000', '5000', '10000'], description = 'Контрольный период записи(мс)'),
+    form.Textbox('analog_delta_percent', 
         form.Validator(notes[2], bool),
         form.regexp('\d+[.\d*]{0,1}', notes[2]),
         form.Validator(notes[2], lambda v: float(v) >= .0 and float(v) <= 100.),
         description = 'Порог изменения (%)'), 
-    form.Dropdown('maxFileLengthHour', ['1', '2', '3', '6', '12'], description = 'Макс.длина файла (час)'),
-    form.Dropdown('maxSelfRecStorageTimeDay', ['0', '1', '3', '8'], description = 'Макс.время хранения (дней)'))
+    form.Dropdown('max_file_length_hour', ['1', '2', '3', '6', '12'], description = 'Макс.длина файла (час)'),
+    form.Dropdown('max_storage_time_day', ['0', '1', '3', '8'], description = 'Макс.время хранения (дней)'))
     
 formatForm = form.Form(
     form.Dropdown('format', comtradeFormats, description = 'Формат файлов данных'),
@@ -117,9 +117,8 @@ class Recorder:
         if not valid:
             return render.recorder(rf, pfs, ef, sf, ff, self.title)
         #Запись парметров
-        xml['id'] = rf.id.value
-        xml['station_name'] = rf.stationName.value
-        xml['name'] = rf.name.value
+        for k in ('id', 'station_name', 'name'):
+            xml[k] = rf[k].value
         
         for i in xrange(len(pfs)):
             inUse = 'yes'
@@ -128,21 +127,19 @@ class Recorder:
             xml['device'][str(i)]['in_use'] = inUse
 
             a, d = '0', '128'
-            print getattr(pfs[i], 'signals%s' % i).value, signals[0]
             if getattr(pfs[i], 'signals%s' % i).value == signals[0]:
                 a, d = '16', '32'
             setDevSigNum(str(i), a, d)
         
-        xml['emergency']['prehistory_ms'] = ef.prehistoryMs.value
-        xml['emergency']['after_history_ms'] = ef.afterHistoryMs.value
+        par = 'emergency'
+        for k in ('prehistory_ms', 'after_history_ms', 'max_storage_time_day'):
+            xml[par][k] = ef[k].value
         #FIXME ms=>s
-        xml['emergency']['max_file_length_ms'] = str(int(ef.maxFileLengthS.value)*1000)
-        xml['emergency']['max_storage_time_day'] = ef.maxStorageTimeDay.value
+        xml[par]['max_file_length_ms'] = str(int(ef.max_file_length_s.value)*1000)
 
-        xml['self-recorder']['live_update_ms'] = sf.liveUpdateMs.value
-        xml['self-recorder']['analog_delta_percent'] = sf.analogDeltaPercent.value
-        xml['self-recorder']['max_file_length_hour'] = sf.maxFileLengthHour.value
-        xml['self-recorder']['max_storage_time_day'] = sf.maxSelfRecStorageTimeDay.value
+        par = 'self-recorder'
+        for k in ('live_update_ms', 'analog_delta_percent', 'max_file_length_hour', 'max_storage_time_day'):
+            xml[par][k] = sf[k].value
 
         xml['data_formats']['comtrade']['codeset'] = ff.codeset.value
         f = 'BIN'
@@ -155,10 +152,11 @@ class Recorder:
     def GET(self):
         web.header('Content-Type', 'text/html; charset= utf-8')
         web.header('Cache-Control', 'no-cache, must-revalidate')        
+        
         rf = recorderForm()
-        rf.id.value = xml['id']
-        rf.stationName.value = xml['station_name']
-        rf.name.value = xml['name']
+        for k in ('id', 'station_name', 'name'):
+            rf[k].value = xml[k] 
+        
         pfs = povForms
         for i in xrange(len(pfs)):
             getattr(pfs[i], 'pov%s' % i).set_value(xml['device'][str(i)]['in_use'] == "yes")
@@ -166,19 +164,18 @@ class Recorder:
             if xml['device'][str(i)]['discretes'] == '128': 
                 si = 1
             getattr(pfs[i], 'signals%s' % i).value = signals[si]
+        
         ef = emergencyForm()
-        ef.prehistoryMs.value = xml['emergency']['prehistory_ms']
-        ef.afterHistoryMs.value = xml['emergency']['after_history_ms']
+        par = 'emergency'
+        for k in ('prehistory_ms', 'after_history_ms', 'max_storage_time_day'):
+            ef[k].value = xml[par][k] 
         #FIXME ms=>s
-        ef.maxFileLengthS.value = str(int(xml['emergency']['max_file_length_ms'])/1000)
-        ef.maxStorageTimeDay.value = xml['emergency']['max_storage_time_day']
+        ef.max_file_length_s.value = str(int(xml['emergency']['max_file_length_ms'])/1000)
 
         sf = selfRecorderForm()
-        sr = xml['self-recorder']
-        sf.liveUpdateMs.value = sr['live_update_ms']
-        sf.analogDeltaPercent.value = sr['analog_delta_percent']
-        sf.maxFileLengthHour.value = sr['max_file_length_hour']
-        sf.maxSelfRecStorageTimeDay.value = sr['max_storage_time_day']
+        par = 'self-recorder'
+        for k in ('live_update_ms', 'analog_delta_percent', 'max_file_length_hour', 'max_storage_time_day'):
+            sf[k].value = xml[par][k] 
         
         ff = formatForm()
         if xml['data_formats']['choice'] == 'comtrade':

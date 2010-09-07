@@ -5,7 +5,9 @@ from web import form
 from config import render, xml, xmlRender
 
 def createDiscretesForm(dev):
-    cb = (form.Checkbox('d%s' % i, value = i, data = xml['device'][dev]['discrete'][str(i)], checked = xml['device'][dev]['discrete'][str(i)]['in_use'] == 'yes')
+    cb = (form.Checkbox('d%s' % i, value = i, 
+        data = xml['device'][dev]['discrete'][str(i)], 
+        checked = xml['device'][dev]['discrete'][str(i)]['in_use'] == 'yes')
             for i in xrange(int(xml['device'][dev]['discretes'])))
     df = form.Form(*cb)
     return df

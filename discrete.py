@@ -7,17 +7,17 @@ from config import render, xml, xmlRender
 MAX_PULSE_DURATION_MS = 20
 
 discreteForm = form.Form(
-    form.Checkbox('inUse', value = 'value', checked = True, description = 'Используется'),
+    form.Checkbox('in_use', value = 'value', description = 'Используется'),
     form.Textbox('alias', description = 'Имя'),
     form.Dropdown('phase', ['', 'A', 'B', 'C'], description = 'Фаза'),
-    form.Textbox('circuitComponent', description = 'Элемент цепи'),
-    form.Checkbox('inverted', value = 'value', checked = True, description = 'Инвертировать'))
+    form.Textbox('circuit_component', description = 'Элемент цепи'),
+    form.Checkbox('inverted', value = 'value', description = 'Инвертировать'))
 
 filterForm = form.Form(
-    form.Dropdown('pulseDurationMs', [str(i) for i in xrange(MAX_PULSE_DURATION_MS + 1)], description = 'Мин. длительность импульса, мс'),
-    form.Checkbox('discreteEmergency', value = 'value', checked = True, description = 'Запись в файл аварии'),
-    form.Checkbox('discreteSelfRecorder', value = 'value', checked = True, description = 'Запись в самописец'),
-    form.Checkbox('discreteOpc', value = 'value', checked = True, description = 'Запись в OPC'))
+    form.Dropdown('pulse_duration_ms', [str(i) for i in xrange(MAX_PULSE_DURATION_MS + 1)], description = 'Мин. длительность импульса, мс'),
+    form.Checkbox('discrete_emergency', value = 'value', description = 'Запись в файл аварии'),
+    form.Checkbox('discrete_self-recorder', value = 'value', description = 'Запись в самописец'),
+    form.Checkbox('discrete_opc', value = 'value', description = 'Запись в OPC'))
 
 class Discrete:
     title = ''
@@ -30,24 +30,17 @@ class Discrete:
         df.dev = dev
         df.id = idx
         d = xml['device'][dev]['discrete'][idx]
-        df.inUse.set_value(d['in_use'] == "yes")
-        df.alias.value = d['alias']
-        df.phase.value = d['phase']
-        df.circuitComponent.value = d['circuit_component']
+        df.in_use.set_value(d['in_use'] == "yes")
+        for k in ('alias', 'phase', 'circuit_component'):
+            df[k].value = d[k]
         df.inverted.set_value(d['inverted'] == "yes")
-        if 'trigger' in d.keys():
-            ff.pulseDurationMs.value = d['trigger']['pulse_duration_ms']
-            if 'discrete_emergency' in d['trigger'].keys():
-                ff.discreteEmergency.set_value(True)
-            if 'discrete_self-recorder' in d['trigger'].keys():
-                ff.discreteSelfRecorder.set_value(True)
-            if 'discrete_opc' in d['trigger'].keys():
-                ff.discreteOpc.set_value(True)
-        else:
-            ff.pulseDurationMs.value = '0'
-            ff.discreteEmergency.set_value(False)
-            ff.discreteSelfRecorder.set_value(False)
-            ff.discreteOpc.set_value(False)
+        flt = 'trigger'
+        if flt in d.keys():
+            par = 'pulse_duration_ms'
+            ff[par].value = d[flt][par]
+            for par in ('discrete_emergency', 'discrete_self-recorder', 'discrete_opc'):
+                if par in d[flt].keys():
+                    ff[par].set_value(True)
 
         return render.discrete(df, ff, title = self.title)
 
@@ -60,28 +53,25 @@ class Discrete:
         d = xml['device'][dev]['discrete'][idx]
         
         inUse = 'no'
-        if df.inUse.get_value():
+        if df.in_use.get_value():
             inUse = 'yes'
         d['in_use'] = inUse
-        d['alias'] = df.alias.value
-        d['phase'] = df.phase.value
-        d['circuit_component'] = df.circuitComponent.value
+        for k in ('alias', 'phase', 'circuit_component'):
+            d[k] = df[k].value 
         inverted = 'no'
         if df.inverted.get_value():
             inverted = 'yes'
         d['inverted'] = inverted
-        pd = ff.pulseDurationMs.value
-        de = ff.discreteEmergency.get_value()
-        ds = ff.discreteSelfRecorder.get_value()
-        do = ff.discreteOpc.get_value()
-        if 'trigger' not in d.keys():
-            d['trigger'] = {}
-        d['trigger']['pulse_duration_ms'] = pd
-        for nv, ov in zip((de, ds, do), ('discrete_emergency', 'discrete_self-recorder', 'discrete_opc')):
-            if nv:
-                d['trigger'][ov] = {}
-            elif ov in d['trigger'].keys():
-                d['trigger'].pop(ov)
+
+        par = 'trigger'
+        if par not in d.keys():
+            d[par] = {}
+        d[par]['pulse_duration_ms'] = ff.pulse_duration_ms.value
+        for k in ('discrete_emergency', 'discrete_self-recorder', 'discrete_opc'):
+            if ff[k].get_value():
+                d[par][k] = {}
+            elif k in d[par].keys():
+                d[par].pop(k)
 
         xml['device'][dev]['discrete'][idx] = d
         return render.completion(self.title)
