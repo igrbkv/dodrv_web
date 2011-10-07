@@ -1,59 +1,58 @@
 # -*- coding: utf-8 -*-
+'''
+1. См. также htpasswd.py
+2. Администратор - admin, остальные - пользователи
+с любыми именами
+3. Запрещен доступ к регистратору нескольких admin одновременно.
+'''
 
 import web
 from web import form
-from config import render, PASSWD_FILE_PATH, MASTER_KEY
+from config import render, SESSIONS_PATH
 import session
+import syslog
+from os import listdir
+from htpasswd import htpasswd
 
 
-def readPassword():
-    psw = 'admin'
-    try:
-        with open(PASSWD_FILE_PATH, 'r') as f:
-            psw = f.read()
-    except:
-        pass
-    return psw
+def online(login):
+    for f in listdir(SESSIONS_PATH):
+        if session.getSession().store[f]['user'] == login:
+            return True
+    return False
 
-def writePassword(psw):
-    ret = True
-    try:
-        with open(PASSWD_FILE_PATH, 'w') as f:
-            f.write(psw)
-    except:
-        ret = False
-    return ret
 
 loginForm = form.Form(
     form.Textbox('login', 
         form.Validator('* Значение не задано', bool), 
         description = 'Логин'),
     form.Password('password', description = 'Пароль'),
-    form.Button('Войти', type = 'submit'),
+    form.Button('submit', type = 'submit', html = u'Войти'),
+    validators = [form.Validator('Неверная пара логин/пароль',
+        lambda i: htpasswd.userValid(str(i.login), str(i.password))),
+        form.Validator('Регистратор уже администрируется',
+        lambda i: str(i.login) != 'admin' or not online(str(i.login)))]
 )
+
 
 class Login:
     """
     Допустимый логин только один - 'admin'
     Пароль берется из файла PASSWRD_FILE_PATH,
     если файла нет, пароль - 'admin'
-    Мастер-пароль - '2128506'
     """
+    
     title = 'Вход на регистратор'
-
+    
     def POST(self):
         lf = loginForm()
         lf.validates()
-        print lf.login.value, lf.password.value
-        if (lf.login.value == 'admin' and lf.password.value == readPassword()) or lf.password.value == MASTER_KEY:
-            session.setLogged()
+        if lf.valid:
+            session.setUser(str(lf.login.value))
+            syslog.syslog('Подключился ' + str(lf.login.value))
             raise web.seeother('/')
-            #eturn render.index('Igor')
         else:
-            lf.login.value = ''
             lf.password.value = ''
-            if lf.valid:
-                lf.note = 'Неверная пара логин/пароль'
             return render.login(lf, self.title)
 
     def GET(self):
@@ -61,10 +60,16 @@ class Login:
         lf = loginForm()
         return render.login(lf, self.title)
 
+class Logout:
+    def GET(self):
+        syslog.syslog('Отключился ' + session.getUser())
+        session.getSession().kill()
+        raise web.seeother('/login')
+
 changePasswordForm = form.Form(
     form.Password('oldPsw', 
         form.Validator('* Неверный пароль', 
-            lambda i: i == readPassword() or i == MASTER_KEY), 
+            lambda i: i == readPassword(session.getUser())), 
         description = 'Старый пароль', rows = '5'),
     form.Password('newPsw', description = 'Новый пароль'),
     form.Password('secPsw', 
@@ -72,7 +77,6 @@ changePasswordForm = form.Form(
     form.Button('Запомнить', type = 'submit'),
     validators = [form.Validator('Пароль повторен неверно', lambda i: i.newPsw == i.secPsw)], 
 )
-
 
 class Password:
     """

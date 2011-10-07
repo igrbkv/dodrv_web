@@ -2,7 +2,8 @@
 
 import web
 from web import form
-from config import render, xml, xmlRender
+from config import render, xml, rewriteConfigXml
+from utils import restartFilters
 
 MAX_PULSE_DURATION_MS = 20
 
@@ -23,7 +24,10 @@ class Discrete:
     title = ''
 
     def GET(self, dev, idx):
-        web.header('Cache-Control', 'no-cache, must-revalidate')        
+        web.header('Content-Type', 'text/html; charset= utf-8')
+        web.header('Cache-Control', 'no-store, no-cache, must-revalidate')
+        web.header('Cache-Control', 'post-check=0, pre-check=0', False)
+        web.header('Pragma', 'no-cache')
         self.title = u'Дискрет:' + dev + ':' + idx
         df = discreteForm()
         ff = filterForm()
@@ -74,4 +78,8 @@ class Discrete:
                 d[par].pop(k)
 
         xml['device'][dev]['discrete'][idx] = d
+        
+        rewriteConfigXml()
+        restartFilters(dev)
+        
         return render.completion(self.title)

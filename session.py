@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import web
+from config import SESSIONS_PATH
+from os import path, mkdir
 
 def authProcessor(handle):
     """Проверка авторизирован ли пользователь"""
     path = web.ctx.path
-    if not isLogged() and path != '/login':
+    if not getUser() and path != '/login':
         raise web.seeother('/login')
     else:
         return handle()
@@ -13,9 +15,11 @@ def authProcessor(handle):
 
 def addSessions(app):
     if web.config.get('_session') is None:
-        store = web.session.DiskStore('sessions')
+        if not path.exists(SESSIONS_PATH):
+            mkdir(SESSIONS_PATH)
+        store = web.session.DiskStore(SESSIONS_PATH)
         session = web.session.Session(app, store, 
-                initializer={'isLogged' : False, 'lastPath': None})
+                initializer={'lastPath': None, 'user': None})
         web.config._session = session
         #Добавить процессор авторизации
         app.add_processor(authProcessor)
@@ -25,11 +29,11 @@ def addSessions(app):
 def getSession():
     return web.config._session
 
-def isLogged():
-    return getSession().isLogged
+def setUser(user):
+    getSession().user = user
 
-def setLogged(res = True):
-    getSession().isLogged = res
+def getUser():
+    return getSession().user
 
 def getLastPath():
     return getSession().lastPath

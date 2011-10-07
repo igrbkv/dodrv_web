@@ -12,11 +12,11 @@ $def showTableHeader():
 
 $def keyExist(key, dic):
     $if key in dic.keys():
-        <a><img src="/static/tick.png"/></a>
+        <a>*</a>
 
 <form action="/config/discretes/$df.dev" method=POST>
     <p>Канал
-    $for ci in xrange(df.devs):
+    $for ci in df.devs:
             $if ci == int(df.dev):
                 <a> [$ci]</a>
             $else:
@@ -34,7 +34,7 @@ $def keyExist(key, dic):
             <td>$d['circuit_component']</td>
             <td>
                 $if d['inverted'] == 'yes':
-                    <a><img src="/static/tick.png"/></a>
+                    <a>*</a>
             </td>
             $if 'trigger' in d.keys():
                 <td>

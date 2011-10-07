@@ -1,222 +1,187 @@
+
 <?xml version="1.0" encoding="UTF-8"?>
-<!--FIXME Сделать валидацию файла конфигурации-->
-<recorder id="0" station_name="П/с Долгоозерная" type="ПАРМА РП4.08" name="Регистратор 0" version="0.0">
-    <general>
-        <loopback_file size_in_days="" size_in_hours="" size_in_minutes="" size_in_seconds="2"/>
-    </general>
+<recorder name="Регистратор 0" version="0.0" station_name="П/с Долгоозерная" type="ПАРМА РП4.08" id="0">
     <ADCs>
-        <ADC unit="V" coef2="0.0196" name="OV-0.2"/>
-        <ADC unit="V" coef2="0.0204" name="HV-0.14/0.20"/>
-        <ADC unit="V" coef2="0.475" name="MV-2.5"/>
-        <ADC unit="V" coef2="1.06" name="MV-5"/>
-        <ADC unit="V" coef2="9.06" name="MV-45"/>
-        <ADC unit="V" coef2="20.46" name="MV-100"/>
-        <ADC unit="V" coef2="30.46" name="MV-150"/>
-        <ADC unit="V" coef2="40.46" name="MV-200"/><!--T-->
-        <ADC unit="V" coef2="54.46" name="MV-270"/>
-        <ADC unit="V" coef2="74.46" name="MV-370"/>
-        <ADC unit="V" coef2="94.46" name="MV-470"/>
-        <ADC unit="V" coef2="108.46" name="MV-540"/>
-        <ADC unit="V" coef2="55.1" name="HV-380/540"/>
-        <ADC unit="V" coef2="76.0" name="OV-650"/>
-        <ADC unit="V" coef2="110.2" name="HV-460/650"/>
-        <ADC unit="V" coef2="1.02" name="HV-7/10"/>
-        <ADC unit="V" coef2="2.04" name="HV-14/20"/>
-        <ADC unit="V" coef2="9.18" name="HV-60/90"/>
-        <ADC unit="V" coef2="20.41" name="HV-140/200"/>
-        <ADC unit="V" coef2="40.82" name="HV-280/400"/>
-        <ADC unit="V" coef2="35.26" name="OV-200/300"/>
-        <ADC unit="A" coef2="0.001" name="MA-5M"/>
-        <ADC unit="A" coef2="0.001" name="HVmA-5/7"/><!--M-->
-        <ADC unit="A" coef2="0.002" name="MA-10M"/>
-        <ADC unit="A" coef2="0.002" name="HVmA-10/14"/><!--M-->
-        <ADC unit="A" coef2="1.25" name="MA-4/6"/>
-        <ADC unit="A" coef2="1.667" name="MA-5/8"/>
-        <ADC unit="A" coef2="2.5" name="MA-8/12"/>
-        <ADC unit="A" coef2="2.994" name="MA-15"/>
-        <ADC unit="A" coef2="3.333" name="MT-16"/><!--T-->
-        <ADC unit="A" coef2="3.333" name="MT-20/25"/><!--M-->
-        <ADC unit="A" coef2="5.998" name="MA-30"/><!--M-->
-        <ADC unit="A" coef2="6.993" name="MA-35"/>
-        <ADC unit="A" coef2="5.0" name="MT-25"/>
-        <ADC unit="A" coef2="5.0" name="MT-30"/><!--M-->
-        <ADC unit="A" coef2="6.667" name="MT-33"/>
-        <ADC unit="A" coef2="6.667" name="MT-40"/><!--M-->
-        <ADC unit="A" coef2="10.0" name="MT-50"/>
-        <ADC unit="A" coef2="10.0" name="MT-60"/><!--M-->
-        <ADC unit="A" coef2="15.15" name="MT-75"/>
-        <ADC unit="A" coef2="20.0" name="MT-100"/><!--T-->
-        <ADC unit="A" coef2="20.0" name="MT-120"/><!--M-->
-        <ADC unit="A" coef2="0.004" name="HVmA-20/28"/>
-        <ADC unit="A" coef2="0.628" name="TT-4"/>
-        <ADC unit="A" coef2="1.255" name="TT-8"/>
-        <ADC unit="A" coef2="2.51" name="TT-16"/>
-        <ADC unit="A" coef2="5.01" name="TT-35"/>
-        <ADC unit="A" coef2="10.02" name="TT-70"/>
-        <ADC unit="A" coef2="20.04" name="TT-140"/>
+    <ADC name="TT-70" unit="A" coef2="10.02"/>
+    <ADC name="HVmA-20/28" unit="A" coef2="0.004"/>
+    <ADC name="TT-8" unit="A" coef2="1.255"/>
+    <ADC name="MV-100" unit="V" coef2="20.46"/>
+    <ADC name="HV-7/10" unit="V" coef2="1.02"/>
+    <ADC name="MV-5" unit="V" coef2="1.06"/>
+    <ADC name="MA-4/6" unit="A" coef2="1.25"/>
+    <ADC name="MT-50" unit="A" coef2="10.0"/>
+    <ADC name="TT-4" unit="A" coef2="0.628"/>
+    <ADC name="MV-2.5" unit="V" coef2="0.475"/>
+    <ADC name="MT-33" unit="A" coef2="6.667"/>
+    <ADC name="TT-35" unit="A" coef2="5.01"/>
+    <ADC name="TT-16" unit="A" coef2="2.51"/>
+    <ADC name="MV-45" unit="V" coef2="9.06"/>
+    <ADC name="MV-470" unit="V" coef2="94.46"/>
+    <ADC name="MT-120" unit="A" coef2="20.0"/>
+    <ADC name="HV-14/20" unit="V" coef2="2.04"/>
+    <ADC name="MT-20/25" unit="A" coef2="3.333"/>
+    <ADC name="MA-5M" unit="A" coef2="0.001"/>
+    <ADC name="OV-0.2" unit="V" coef2="0.0196"/>
+    <ADC name="MA-15" unit="A" coef2="2.994"/>
+    <ADC name="MA-35" unit="A" coef2="6.993"/>
+    <ADC name="HVmA-10/14" unit="A" coef2="0.002"/>
+    <ADC name="MA-30" unit="A" coef2="5.998"/>
+    <ADC name="HV-0.14/0.20" unit="V" coef2="0.0204"/>
+    <ADC name="HV-60/90" unit="V" coef2="9.18"/>
+    <ADC name="HVmA-5/7" unit="A" coef2="0.001"/>
+    <ADC name="MV-150" unit="V" coef2="30.46"/>
+    <ADC name="MT-60" unit="A" coef2="10.0"/>
+    <ADC name="MT-40" unit="A" coef2="6.667"/>
+    <ADC name="MV-200" unit="V" coef2="40.46"/>
+    <ADC name="OV-650" unit="V" coef2="76.0"/>
+    <ADC name="HV-380/540" unit="V" coef2="55.1"/>
+    <ADC name="HV-460/650" unit="V" coef2="110.2"/>
+    <ADC name="MA-10M" unit="A" coef2="0.002"/>
+    <ADC name="MT-25" unit="A" coef2="5.0"/>
+    <ADC name="OV-200/300" unit="V" coef2="35.26"/>
+    <ADC name="MA-5/8" unit="A" coef2="1.667"/>
+    <ADC name="MA-8/12" unit="A" coef2="2.5"/>
+    <ADC name="TT-140" unit="A" coef2="20.04"/>
+    <ADC name="HV-280/400" unit="V" coef2="40.82"/>
+    <ADC name="MT-75" unit="A" coef2="15.15"/>
+    <ADC name="MV-370" unit="V" coef2="74.46"/>
+    <ADC name="MT-100" unit="A" coef2="20.0"/>
+    <ADC name="MT-16" unit="A" coef2="3.333"/>
+    <ADC name="HV-140/200" unit="V" coef2="20.41"/>
+    <ADC name="MT-30" unit="A" coef2="5.0"/>
+    <ADC name="MV-270" unit="V" coef2="54.46"/>
+    <ADC name="MV-540" unit="V" coef2="108.46"/>
     </ADCs>
     <devices>
-        <device in_use="yes" id="0" sample_rate="1800" frequency="50" analogs="16" discretes="32" skew="yes">
-            <analogs>
-                <analog id="0" in_use="yes" dc_component="0" ADC="MV-200" sinusoid="yes" alias="Ua" coef1="10.0" phase="A" circuit_component="">
-                    <rms integration_interval_ms="20">
-                    <!--
-                        <analog_emergency top_threshold="150.0" bottom_threshold="" max_duration_ms=""/>
-                        <analog_opc/>
-                    -->
-                        <analog_self-recorder analog_delta_percent="3"/>
-                    </rms>
-                    <!--
-                    <zero_phase_sequence integration_interval_ms="20" id_b="1" id_c="2">
-                        <analog_opc/>
-                    </zero_phase_sequence>
-                    -->
-                    <positive_phase_sequence integration_interval_ms="20" id_b="1" id_c="2">
-                        <analog_opc/>
-                    </positive_phase_sequence>
-                    <!--
-                    <negative_phase_sequence integration_interval_ms="20" id_b="1" id_c="2">
-                        <analog_opc/>
-                    </negative_phase_sequence>
-                    -->
-                    <!--
-                    <harmonic integration_interval_ms="20" number="1">
-                        <analog_emergency top_threshold="259" bottom_threshold="" max_duration_ms=""/>
-                        <analog_opc/>
-                    </harmonic>
-                    -->
-                    <active_power integration_interval_ms="20" id_current="4">
-                        <!--
-                        <analog_opc/>
-                        -->
-                    </active_power>
-                    <reactive_power integration_interval_ms="20" id_current="4">
-                    </reactive_power>
-                </analog>
-                <analog id="1" in_use="yes" dc_component="0" ADC="MV-200" sinusoid="yes" alias="" coef1="1.0" phase="B" circuit_component="">
-                    <!--
-                    <rms integration_interval_ms="20">
-                        <analog_emergency top_threshold="" top_return_threshold="" bottom_threshold="" bottom_return_threshold=""/>
-                        <analog_opc/>
-                        <analog_self-recorder delta_percent="2"/>
-                    </rms>
-                    <zero_phase_sequence id_b="2" id_c="3">
-                        <analog_opc/>
-                    </zero_phase_sequence>
-                    <positive_phase_sequence id_b="2" id_c="3">
-                        <analog_opc/>
-                    </positive_phase_sequence>
-                    <negative_phase_sequence id_b="2" id_c="3">
-                        <analog_opc/>
-                    </negative_phase_sequence>
-                    <harmonic integration_interval_ms="20" number="1">
-                        <analog_opc/>
-                    </harmonic>
-                    <active_power>
-                        <analog_opc/>
-                    </active_power>
-                    <reactive_power>
-                        <analog_opc/>
-                    </reactive_power>
-                    -->
-                </analog>
-                <analog id="2" in_use="yes" dc_component="0" ADC="MV-200" alias="" coef1="1.0" phase="C" circuit_component="" sinusoid="yes">
-                    <!--
-                    <rms integration_interval_ms="20">
-                        <analog_emergency top_threshold="" bottom_threshold="" after_history_ms="" max_duration_ms=""/>
-                        <analog_opc/>
-                        <analog_self-recorder analog_delta_percent="3"/>
-                    </rms>
-                    <zero_phase_sequence integration_interval_ms="20" id_b="3" id_c="4">
-                        <analog_opc/>
-                    </zero_phase_sequence>
-                    <positive_phase_sequence integration_interval_ms="20" id_b="3" id_c="4">
-                        <analog_opc/>
-                    </positive_phase_sequence>
-                    <negative_phase_sequence integration_interval_ms="20" id_b="3" id_c="4">
-                        <analog_opc/>
-                    </negative_phase_sequence>
-                    <harmonic integration_interval_ms="20" number="1">
-                        <analog_opc/>
-                    </harmonic>
-                    <active_power>
-                        <analog_opc/>
-                    </active_power>
-                    <reactive_power>
-                        <analog_opc/>
-                    </reactive_power>
-                    -->
-                </analog>
-                <analog id="3" in_use="yes" dc_component="0" ADC="MV-200" alias="" coef1="1.0" phase="A" circuit_component="" sinusoid="yes"/>
-                <analog id="4" in_use="yes" dc_component="0" ADC="MA-5/8" alias="" coef1="1.0" phase="A" circuit_component="" sinusoid="yes">
-                    <rms integration_interval_ms="20"/>
-                </analog>
-                <analog id="5" in_use="yes" dc_component="0" ADC="MV-200" alias="" coef1="1.0" phase="A" circuit_component="" sinusoid="yes"/>
-                <analog id="6" in_use="yes" dc_component="0" ADC="MV-200" alias="" coef1="1.0" phase="A" circuit_component="" sinusoid="yes"/>
-                <analog id="7" in_use="yes" dc_component="0" ADC="MV-200" alias="" coef1="1.0" phase="A" circuit_component="" sinusoid="yes"/>
-                <analog id="8" in_use="yes" dc_component="0" ADC="MT-100" alias="" coef1="1.0" phase="A" circuit_component="" sinusoid="yes"/>
-                <analog id="9" in_use="yes" dc_component="0" ADC="MT-100" alias="" coef1="1.0" phase="A" circuit_component="" sinusoid="yes"/>
-                <analog id="10" in_use="yes" dc_component="0" ADC="MT-100" alias="" coef1="1.0" phase="A" circuit_component="" sinusoid="yes"/>
-                <analog id="11" in_use="yes" dc_component="0" ADC="MT-100" alias="" coef1="1.0" phase="A" circuit_component="" sinusoid="yes"/>
-                <analog id="12" in_use="yes" dc_component="0" ADC="MT-100" alias="" coef1="1.0" phase="A" circuit_component="" sinusoid="yes"/>
-                <analog id="13" in_use="yes" dc_component="0" ADC="MT-100" alias="" coef1="1.0" phase="A" circuit_component="" sinusoid="yes"/>
-                <analog id="14" in_use="yes" dc_component="0" ADC="MT-100" alias="" coef1="1.0" phase="A" circuit_component="" sinusoid="yes"/>
-                <analog id="15" in_use="yes" dc_component="0" ADC="MT-100" alias="" coef1="1.0" phase="A" circuit_component="" sinusoid="yes"/>
-            </analogs>
-            <discretes>
-                <!--<discretes_opc/>-->
-                <discrete id="0" in_use="yes" inverted="yes" alias="Вкл." phase="" circuit_component="">
-                    <trigger pulse_duration_ms="0" chatter_period_ms="0" chatter_suspend_threshold="0" chatter_resume_threshold="0">
-                        <discrete_emergency/>
-                        <discrete_opc/>
-                        <discrete_self-recorder/>
-                    </trigger>
-                </discrete>
-                <discrete id="1" in_use="yes" inverted="yes" alias="" phase="" circuit_component="">
-                     <trigger pulse_duration_ms="0" chatter_period_ms="0" chatter_suspend_threshold="0" chatter_resume_threshold="0">
-                        <discrete_emergency/>
-                        <discrete_opc/>
-                        <discrete_self-recorder/>
-                    </trigger>
-                </discrete>
-                <discrete id="2" in_use="no" inverted="yes" alias="" phase="" circuit_component=""/>
-                <discrete id="3" in_use="no" inverted="yes" alias="" phase="" circuit_component=""/>
-                <discrete id="4" in_use="no" inverted="yes" alias="" phase="" circuit_component=""/>
-                <discrete id="5" in_use="no" inverted="no" alias="" phase="" circuit_component=""/>
-                <discrete id="6" in_use="no" inverted="yes" alias="" phase="" circuit_component=""/>
-                <discrete id="7" in_use="no" inverted="yes" alias="" phase="" circuit_component=""/>
-                <discrete id="8" in_use="no" inverted="yes" alias="" phase="" circuit_component=""/>
-                <discrete id="9" in_use="no" inverted="yes" alias="" phase="" circuit_component=""/>
-                <discrete id="10" in_use="no" inverted="yes" alias="" phase="" circuit_component=""/>
-                <discrete id="11" in_use="no" inverted="yes" alias="" phase="" circuit_component=""/>
-                <discrete id="12" in_use="no" inverted="yes" alias="" phase="" circuit_component=""/>
-                <discrete id="13" in_use="no" inverted="no" alias="" phase="" circuit_component=""/>
-                <discrete id="14" in_use="no" inverted="yes" alias="" phase="" circuit_component=""/>
-                <discrete id="15" in_use="no" inverted="yes" alias="" phase="" circuit_component=""/>
-                <discrete id="16" in_use="no" inverted="no" alias="" phase="" circuit_component=""/>
-                <discrete id="17" in_use="no" inverted="no" alias="" phase="" circuit_component=""/>
-                <discrete id="18" in_use="no" inverted="no" alias="" phase="" circuit_component=""/>
-                <discrete id="19" in_use="no" inverted="no" alias="" phase="" circuit_component=""/>
-                <discrete id="20" in_use="no" inverted="no" alias="" phase="" circuit_component=""/>
-                <discrete id="21" in_use="no" inverted="no" alias="" phase="" circuit_component=""/>
-                <discrete id="22" in_use="no" inverted="no" alias="" phase="" circuit_component=""/>
-                <discrete id="23" in_use="no" inverted="no" alias="" phase="" circuit_component=""/>
-                <discrete id="24" in_use="no" inverted="no" alias="" phase="" circuit_component=""/>
-                <discrete id="25" in_use="no" inverted="no" alias="" phase="" circuit_component=""/>
-                <discrete id="26" in_use="no" inverted="yes" alias="" phase="" circuit_component=""/>
-                <discrete id="27" in_use="no" inverted="yes" alias="" phase="" circuit_component=""/>
-                <discrete id="28" in_use="no" inverted="yes" alias="" phase="" circuit_component=""/>
-                <discrete id="29" in_use="no" inverted="yes" alias="" phase="" circuit_component=""/>
-                <discrete id="30" in_use="no" inverted="yes" alias="" phase="" circuit_component=""/>
-                <discrete id="31" in_use="no" inverted="yes" alias="" phase="" circuit_component=""/>
-            </discretes>
-        </device>
+    <device id="0" in_use="yes" skew="yes" discretes="32" frequency="50" sample_rate="1800" analogs="16">
+        <analogs>
+            <analog in_use="yes" sinusoid="yes" id="11" circuit_component="" alias="" ADC="MT-100" phase="A" dc_component="0" coef1="1.0">
+            </analog>
+            <analog in_use="yes" sinusoid="yes" id="10" circuit_component="" alias="" ADC="MT-100" phase="A" dc_component="0" coef1="1.0">
+            </analog>
+            <analog in_use="yes" sinusoid="yes" id="13" circuit_component="" alias="" ADC="MT-100" phase="A" dc_component="0" coef1="1.0">
+            </analog>
+            <analog in_use="yes" sinusoid="yes" id="12" circuit_component="" alias="" ADC="MT-100" phase="A" dc_component="0" coef1="1.0">
+            </analog>
+            <analog in_use="yes" sinusoid="yes" id="15" circuit_component="" alias="" ADC="MT-100" phase="A" dc_component="0" coef1="1.0">
+            </analog>
+            <analog in_use="yes" sinusoid="yes" id="14" circuit_component="" alias="" ADC="MT-100" phase="A" dc_component="0" coef1="1.0">
+            </analog>
+            <analog in_use="yes" sinusoid="yes" id="1" circuit_component="" alias="" ADC="MV-200" phase="B" dc_component="0" coef1="1.0">
+            </analog>
+            <analog in_use="yes" sinusoid="yes" id="0" circuit_component="" alias="Ua" ADC="MV-200" phase="A" dc_component="0" coef1="10.0">
+                <rms integration_interval_ms="20">
+                    <analog_self-recorder analog_delta_percent="3"/>
+                </rms>
+                <positive_phase_sequence id_b="1" id_c="2" integration_interval_ms="20">
+                    <analog_opc />
+                </positive_phase_sequence>
+                <active_power integration_interval_ms="20" id_current="4">
+                </active_power>
+                <reactive_power integration_interval_ms="20" id_current="4">
+                </reactive_power>
+            </analog>
+            <analog in_use="yes" sinusoid="yes" id="3" circuit_component="" alias="" ADC="MV-200" phase="A" dc_component="0" coef1="1.0">
+            </analog>
+            <analog in_use="yes" sinusoid="yes" id="2" circuit_component="" alias="" ADC="MV-200" phase="C" dc_component="0" coef1="1.0">
+            </analog>
+            <analog in_use="yes" sinusoid="yes" id="5" circuit_component="" alias="" ADC="MV-200" phase="A" dc_component="0" coef1="1.0">
+            </analog>
+            <analog in_use="yes" sinusoid="yes" id="4" circuit_component="" alias="" ADC="MA-5/8" phase="A" dc_component="0" coef1="1.0">
+                <rms integration_interval_ms="20">
+                </rms>
+            </analog>
+            <analog in_use="yes" sinusoid="yes" id="7" circuit_component="" alias="" ADC="MV-200" phase="A" dc_component="0" coef1="1.0">
+            </analog>
+            <analog in_use="yes" sinusoid="yes" id="6" circuit_component="" alias="" ADC="MV-200" phase="A" dc_component="0" coef1="1.0">
+            </analog>
+            <analog in_use="yes" sinusoid="yes" id="9" circuit_component="" alias="" ADC="MT-100" phase="A" dc_component="0" coef1="1.0">
+            </analog>
+            <analog in_use="yes" sinusoid="yes" id="8" circuit_component="" alias="" ADC="MT-100" phase="A" dc_component="0" coef1="1.0">
+            </analog>
+        </analogs>
+        <discretes>
+            <discrete in_use="no" inverted="no" circuit_component="" alias="" phase="" id="24">
+            </discrete>
+            <discrete in_use="no" inverted="no" circuit_component="" alias="" phase="" id="25">
+            </discrete>
+            <discrete in_use="no" inverted="yes" circuit_component="" alias="" phase="" id="26">
+            </discrete>
+            <discrete in_use="no" inverted="yes" circuit_component="" alias="" phase="" id="27">
+            </discrete>
+            <discrete in_use="no" inverted="no" circuit_component="" alias="" phase="" id="20">
+            </discrete>
+            <discrete in_use="no" inverted="no" circuit_component="" alias="" phase="" id="21">
+            </discrete>
+            <discrete in_use="no" inverted="no" circuit_component="" alias="" phase="" id="22">
+            </discrete>
+            <discrete in_use="no" inverted="no" circuit_component="" alias="" phase="" id="23">
+            </discrete>
+            <discrete in_use="no" inverted="yes" circuit_component="" alias="" phase="" id="28">
+            </discrete>
+            <discrete in_use="no" inverted="yes" circuit_component="" alias="" phase="" id="29">
+            </discrete>
+            <discrete in_use="yes" inverted="yes" circuit_component="" alias="" phase="" id="1">
+                <trigger pulse_duration_ms="0" chatter_suspend_threshold="0" chatter_period_ms="0" chatter_resume_threshold="0">
+                    <discrete_emergency />
+                    <discrete_self-recorder />
+                    <discrete_opc />
+                </trigger>
+            </discrete>
+            <discrete in_use="yes" inverted="yes" circuit_component="" alias="Вкл." phase="" id="0">
+                <trigger pulse_duration_ms="0" chatter_suspend_threshold="0" chatter_period_ms="0" chatter_resume_threshold="0">
+                    <discrete_emergency />
+                    <discrete_self-recorder />
+                    <discrete_opc />
+                </trigger>
+            </discrete>
+            <discrete in_use="no" inverted="yes" circuit_component="" alias="" phase="" id="3">
+            </discrete>
+            <discrete in_use="no" inverted="yes" circuit_component="" alias="" phase="" id="2">
+            </discrete>
+            <discrete in_use="no" inverted="no" circuit_component="" alias="" phase="" id="5">
+            </discrete>
+            <discrete in_use="no" inverted="yes" circuit_component="" alias="" phase="" id="4">
+            </discrete>
+            <discrete in_use="no" inverted="yes" circuit_component="" alias="" phase="" id="7">
+            </discrete>
+            <discrete in_use="no" inverted="yes" circuit_component="" alias="" phase="" id="6">
+            </discrete>
+            <discrete in_use="no" inverted="yes" circuit_component="" alias="" phase="" id="9">
+            </discrete>
+            <discrete in_use="no" inverted="yes" circuit_component="" alias="" phase="" id="8">
+            </discrete>
+            <discrete in_use="no" inverted="yes" circuit_component="" alias="" phase="" id="11">
+            </discrete>
+            <discrete in_use="no" inverted="yes" circuit_component="" alias="" phase="" id="10">
+            </discrete>
+            <discrete in_use="no" inverted="no" circuit_component="" alias="" phase="" id="13">
+            </discrete>
+            <discrete in_use="no" inverted="yes" circuit_component="" alias="" phase="" id="12">
+            </discrete>
+            <discrete in_use="no" inverted="yes" circuit_component="" alias="" phase="" id="15">
+            </discrete>
+            <discrete in_use="no" inverted="yes" circuit_component="" alias="" phase="" id="14">
+            </discrete>
+            <discrete in_use="no" inverted="no" circuit_component="" alias="" phase="" id="17">
+            </discrete>
+            <discrete in_use="no" inverted="no" circuit_component="" alias="" phase="" id="16">
+            </discrete>
+            <discrete in_use="no" inverted="no" circuit_component="" alias="" phase="" id="19">
+            </discrete>
+            <discrete in_use="no" inverted="no" circuit_component="" alias="" phase="" id="18">
+            </discrete>
+            <discrete in_use="no" inverted="yes" circuit_component="" alias="" phase="" id="31">
+            </discrete>
+            <discrete in_use="no" inverted="yes" circuit_component="" alias="" phase="" id="30">
+            </discrete>
+        </discretes>
+    </device>
     </devices>
     <opc scan_rate_ms="100"/>
-    <emergency prehistory_ms="100" after_history_ms="100" max_file_length_ms="150" max_storage_time_day = '0'/>
-    <self-recorder live_update_ms="10" analog_delta_percent="5" max_file_length_hour="1" max_storage_time_day = '0'/>
+    <emergency max_storage_time_day="0" prehistory_ms="100" after_history_ms="100" max_file_length_ms="150"/>
+    <self-recorder max_file_length_hour="1" analog_delta_percent="5" max_storage_time_day="0" live_update_ms="10"/>
     <data_formats choice="comtrade">
-        <comtrade codeset="CP1251" data_file="ASCII"/>
-        <pqif/>
+        <comtrade data_file="ASCII" codeset="CP1251"/>
     </data_formats>
 </recorder>

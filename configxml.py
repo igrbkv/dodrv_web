@@ -1,10 +1,46 @@
 # -*- coding: utf-8 -*-
 """
-1. Файл config.xml создается инсталлятором с параметрами: датчики, тип регистратора, общая частота дискретизации, частота тока, устройства, сигналы.
+1. Файл filters.conf записывается инсталлятором с параметрами: датчики, 
+тип регистратора, общая частота дискретизации, частота тока, 
+устройства, сигналы. Для РП4.06 в файле 6 каналов pov по 16/32 сигналов.  
+При разборе отсутствующие каналы не удаляются, а только помечаются 
+в параметре exists.
+Минимальный файл конфигурации:
+<?xml version="1.0" encoding="UTF-8"?>
+<recorder id="0" station_name="П/с Долгоозерная" type="ПАРМА РП4.06" name="Регистратор 0" version="0.0">
+    <ADCs>
+        <ADC unit="V" coef2="0.0196" name="OV-0.2"/>
+        ...
+    </ADCs>
+    <devices>
+        <device id="0" in_use="yes" sample_rate="1800" frequency="50" analogs="16" discretes="32" skew="yes">
+            <analogs>
+                <analog id="0" in_use="yes" dc_component="0" ADC="MV-200" alias="Ia" coef1="1.0" phase="A">
+                ...
+            </analogs>
+            <discretes>
+                <discrete id="0" in_use="yes" inverted="yes" alias="Вкл." phase="" circuit_component="">
+                ...
+            </discretes>
+        </device>
+        <device id="1" in_use="yes" sample_rate="1800" frequency="50" analogs="16" discretes="32" skew="yes">
+        ...
+        <device id="5" in_use="yes" sample_rate="1800" frequency="50" analogs="16" discretes="32" skew="yes">
+            ...
+        </device>
+    </devices>
+    <opc scan_rate_ms="100"/>
+    <emergency prehistory_ms="200" after_history_ms="5000" max_file_length_ms="10000"/>
+    <self-recorder live_update_ms="10000" analog_delta_percent="5" max_file_length_hour="1"/>
+    <data_formats choice="comtrade">
+        <comtrade codeset="CP1251" data_file="ASCII"/>
+    </data_formats>
+</recorder>
 """
 import xml.sax
+from os import path
 
-__all__ = ['configXml']
+__all__ = ['configXml', 'saveConfigXml']
 
 
 ADCCOEF = 10./(1<<12)
@@ -61,6 +97,9 @@ class ConfigParser(xml.sax.ContentHandler):
             d = self._getObj(attr, ('in_use', 'analogs', 'discretes', 'sample_rate', 'frequency', 'skew'))
             d['analog'] = {}
             d['discrete'] = {}
+            # отсутствующие каналы pov не удаляются, а только помечаются 
+            # дополнительным параметром exists.
+            d['exists'] = path.exists('/dev/pov%s' % attr.get('id'))
             self.recorder['device'][attr.get('id')] = d
             self.curDevice = attr.get('id')
 
@@ -132,7 +171,7 @@ class ConfigParser(xml.sax.ContentHandler):
         if tag == 'device':
             self.curDevice = None
         elif tag == 'analog':
-            print self.recorder['device'][self.curDevice]['analog'][self.curAnalog]
+            #print self.recorder['device'][self.curDevice]['analog'][self.curAnalog]
             self.curAnalog = None
         elif tag == 'discrete':
             self.curDiscrete = None
@@ -150,6 +189,7 @@ def configXml(filePath):
         raise         
     else:
         return parser.recorder
+
 
 if __name__ == '__main__':
     rcd = configXml('config.xml')

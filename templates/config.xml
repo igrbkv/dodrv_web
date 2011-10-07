@@ -1,5 +1,4 @@
 $def with(xml)
-
 <?xml version="1.0" encoding="UTF-8"?>
 <recorder $:attrs(xml)>
     <ADCs>
@@ -11,38 +10,26 @@ $def with(xml)
         <device id="$k" $:attrs(v)>
             <analogs>
                 $for a in v['analog'].itervalues():
-                    $ filters = {}
-                    $for fn in ('rms', 'zero_phase_sequence', 'positive_phase_sequence', 'negative_phase_sequence', 'harmonic', 'active_power', 'reactive_power'):
-                        $if fn in a.keys():
-                            $filters.update({fn: a[fn]})
                     <analog $:attrs(a)>
-                        $for fk, fv in filters.iteritems():
-                            $ handlers = {}
-                            $for hn in ('analog_emergency', 'analog_self-recorder', 'analog_opc'):
-                                $if hn in fv.keys():
-                                    $handlers.update({hn: fv[hn]})
-                            <$fk $:attrs(fv)>
-                                $for hk, hv in handlers.iteritems():
-                                    <$hk $:attrs(hv)/>
-                            </$fk>
+                        $for fn in ('rms', 'zero_phase_sequence', 'positive_phase_sequence', 'negative_phase_sequence', 'harmonic', 'active_power', 'reactive_power'):
+                            $if fn in a.keys():
+                                <$fn $:attrs(a[fn])>
+                                    $for hn in ('analog_emergency', 'analog_self-recorder', 'analog_opc'):
+                                        $if hn in a[fn].keys():
+                                            <$hn $:attrs(a[fn][hn])/>
+                                </$fn>
                     </analog>
             </analogs>
             <discretes>
                 $for d in v['discrete'].itervalues():
-                    $ filters = {}
-                    $for fn in ('trigger',):
-                        $if fn in d.keys():
-                            $filters.update({fn: d[fn]})
                     <discrete $:attrs(d)>
-                        $for fk, fv in filters.iteritems():
-                            $ handlers = {} 
-                            $for hn in ('discrete_emergency', 'discrete_self-recorder', 'discrete_opc'):
-                                $if hn in fv.keys():
-                                    $handlers.update({hn: fv[hn]})
-                            <$fk $:attrs(fv)>
-                                $for hk, hv in handlers.iteritems():
-                                    <$hk $:attrs(hv)/>
-                            </$fk>
+                        $for fn in ('trigger',):
+                            $if fn in d.keys():
+                                <$fn $:attrs(d[fn])>
+                                    $for hn in ('discrete_emergency', 'discrete_self-recorder', 'discrete_opc'):
+                                        $if hn in d[fn].keys():
+                                            <$hn $:attrs(d[fn][hn])/>
+                                </$fn>
                     </discrete>
             </discretes>
         </device>

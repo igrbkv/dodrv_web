@@ -24,7 +24,6 @@ def recorderName():
 def isCurPath(path):
     return web.ctx.path.split('/')[1] == path.split('/')[1]
 
-
 def getMenu():
     if web.ctx.path == '/login': 
         return menu.loginMenu

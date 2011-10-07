@@ -2,8 +2,9 @@
 
 import web
 from web import form
-from config import render, xml, xmlRender
+from config import render, xml, xmlRender, rewriteConfigXml
 import math
+from utils import restartFilters
 
 MIN_INTEGRATION_INTERVAL_MS = 10
 MAX_INTEGRATION_INTERVAL_MS = 100
@@ -164,9 +165,9 @@ class Analog:
                         frm[pref_ + 'id_c'].note = PHASES_B_C_MUST_BE_DIF_NOTE
                         valid = False
                 elif pref in ('active_power', 'reactive_power'):
-                    if not self.a[pref]['current_id']:
+                    if not self.a[pref]['id_current']:
                         valid = False
-                    elif xml['ADCs'][self.a['ADC']]['unit'] == xml['ADCs'][xml['device'][dev]['analog'][self.a[pref]['current_id']]['ADC']]['unit']:
+                    elif xml['ADCs'][self.a['ADC']]['unit'] == xml['ADCs'][xml['device'][dev]['analog'][self.a[pref]['id_current']]['ADC']]['unit']:
                         valid = False
             if not  valid:
                 for h in handlers:
@@ -183,16 +184,15 @@ class Analog:
                         frm[pref_ + 'bottom_threshold'].note = THRESHOLDS_INTERSECTION_NOTE
                         valid = False
                     if top:
+                        topBound = ADC_MULTIPLICATOR*float(xml['ADCs'][self.a['ADC']]['coef2'])*float(self.a['coef1'])
                         if pref in ('rms', 'harmonic'):
-                            topBound = ADC_MULTIPLICATOR*float(xml['ADCs'][self.a['ADC']])*float(self.a['coef1'])
                             if self.a['sinusoid'] == 'yes':
                                 topBound /= math.sqrt(2)
                         elif pref in ('zero_phase_sequence', 'positive_phase_sequence', 'negative_phase_sequence'):
-                            topBound = ADC_MULTIPLICATOR*float(xml['ADCs'][self.a['ADC']])*float(self.a['coef1'])*3
+                            topBound *= 3
                         elif pref in ('active_power', 'reactive_power'):
-                            aI = xml['device'][dev]['analog'][self.a[pref]['current_id']]
-                            topBound = ADC_MULTIPLICATOR*float(xml['ADCs'][self.a['ADC']])*float(self.a['coef1'])*\
-                                ADC_MULTIPLICATOR*float(xml['ADCs'][aI['ADC']])*float(aI['coef1'])/2
+                            aI = xml['device'][dev]['analog'][self.a[pref]['id_current']]
+                            topBound *= ADC_MULTIPLICATOR*float(xml['ADCs'][aI['ADC']]['coef2'])*float(aI['coef1'])/2
 
                         if topBound  < float(top):
                             frm[top].note = THRESHOLD_TOO_BIG_NOTE % topBound
@@ -208,7 +208,10 @@ class Analog:
         return frm, valid
 
     def GET(self, dev, idx):
-        web.header('Cache-Control', 'no-cache, must-revalidate')        
+        web.header('Content-Type', 'text/html; charset= utf-8')
+        web.header('Cache-Control', 'no-store, no-cache, must-revalidate')
+        web.header('Cache-Control', 'post-check=0, pre-check=0', False)
+        web.header('Pragma', 'no-cache')
         self.title = u'Аналог ' + dev + ':' + idx
         self.a = xml['device'][dev]['analog'][idx]
 
@@ -216,7 +219,7 @@ class Analog:
         analogFrm.dev = dev
         analogFrm.id = idx
         analogFrm['in_use'].set_value(self.a['in_use'] == "yes")
-        for k in ('phase', 'circuit_component', 'ADC', 'sinusoid', 'dc_component', 'coef1'):
+        for k in ('alias', 'phase', 'circuit_component', 'ADC', 'sinusoid', 'dc_component', 'coef1'):
             analogFrm[k].set_value(self.a[k])
 
         par = 'rms'
@@ -268,7 +271,7 @@ class Analog:
         if analogFrm.in_use.get_value():
             in_use = 'yes'
         self.a['in_use'] = in_use
-        for k in ('phase', 'circuit_component', 'ADC', 'sinusoid', 'dc_component', 'coef1'):
+        for k in ('alias', 'phase', 'circuit_component', 'ADC', 'sinusoid', 'dc_component', 'coef1'):
             self.a[k] = analogFrm[k].get_value()
 
         self.getForm('rms', rmsFrm)
@@ -291,5 +294,8 @@ class Analog:
             return render.analog(analogFrm, rmsFrm, zeroFrm, positiveFrm, negativeFrm, harmonicFrm, activeFrm, reactiveFrm, title = self.title)
         
         xml['device'][dev]['analog'][idx] = self.a
-        print xmlRender(xml)
+        
+        rewriteConfigXml()
+        restartFilters(dev)
+
         return render.completion(self.title)

@@ -11,24 +11,28 @@
 """
 import web
 import session
-import login, index
-
 
 urls = (
-    '/', 'index.Index',
+    '/', 'state.System',
     '/login', 'login.Login',
+    '/logout', 'login.Logout',
     '/config/password', 'login.Password',
     '/config/recorder', 'recorder.Recorder',
     '/config/discretes/(\d+)', 'discretes.Discretes',
+    '/config/discretes', 'discretes.PreDiscretes',
     '/config/discrete/(\d+)/(\d+)', 'discrete.Discrete',
     '/config/analogs/(\d+)', 'analogs.Analogs',
+    '/config/analogs', 'analogs.PreAnalogs',
     '/config/analog/(\d+)/(\d+)', 'analog.Analog',
+    '/config/users', 'users.Users',
 )
 
 
+app = web.application(urls, globals())
+session.addSessions(app)
+
 if __name__=='__main__': 
-    app = web.application(urls, globals())
-    session.addSessions(app)
     #web.internalerror = web.debugerror
     app.run()
 
+application = app.wsgifunc()

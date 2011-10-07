@@ -2,7 +2,9 @@
 
 import web
 from web import form
-from config import render, xml, xmlRender
+from config import render, xml, xmlRender, rewriteConfigXml
+from os import path
+from utils import restartFilters
 
 signals = [u'16 аналогов 32 дискрета', u'128 дискрет']
 comtradeFormats = ['COMTRADE ASCII', 'COMTRADE BIN']
@@ -23,12 +25,13 @@ recorderForm = form.Form(
     form.Dropdown('type', [xml['type'],], description = 'Тип'))
 
 def createPovForms():
-    pf = []
+    pf = {}
     for i in xrange(len(xml['device'])):
-        p = form.Form(
-            form.Checkbox('pov%s' % i, value = '%s' %i, description = 'Канал %s' % i),
-            form.Dropdown('signals%s' % i, signals, description = ''))
-        pf.append(p)
+        if xml['device'][str(i)]['exists']:
+            p = form.Form(
+                form.Checkbox('pov%s' % i, value = '%s' %i, description = 'Канал %s' % i),
+                form.Dropdown('signals%s' % i, signals, description = ''))
+            pf[i] = p
     return pf
 
 povForms = createPovForms()
@@ -71,11 +74,11 @@ def setDevSigNum(dev, aNew, dNew):
                 'coef1':'1.0', 
                 'ADC': xml['ADCs'].keys()[0], #Первый попавшийся
                 'dc_component':'0', 
-                'harmonic': 'yes', 
+                'sinusoid': 'yes', 
                 'alias=': '', 
                 'phase': '',
                 'filters':{}}
-            xml['device'][dev]['analogs'] = dict((str(ii), tmpl) for ii in xrange(int(aNew)))
+            xml['device'][dev]['analog'] = dict((str(ii), tmpl) for ii in xrange(int(aNew)))
     if dNew != dOld:
         if dNew == '32':
             for ii in xrange(32, 128):
@@ -99,66 +102,19 @@ class Recorder:
     """
     title = 'Параметры регистратора'
 
-    def POST(self):
-        valid = True
-        rf = recorderForm()
-        pfs = povForms
-        ef = emergencyForm()
-        sf = selfRecorderForm()
-        ff = formatForm()
-        
-        valid &= rf.validates()
-        for p in pfs:
-            p.validates()
-        valid &= ef.validates() 
-        valid &= sf.validates() 
-        valid &= ff.validates()
-
-        if not valid:
-            return render.recorder(rf, pfs, ef, sf, ff, self.title)
-        #Запись парметров
-        for k in ('id', 'station_name', 'name'):
-            xml[k] = rf[k].value
-        
-        for i in xrange(len(pfs)):
-            inUse = 'yes'
-            if not getattr(pfs[i], 'pov%s' % i).get_value():
-                inUse = 'no'
-            xml['device'][str(i)]['in_use'] = inUse
-
-            a, d = '0', '128'
-            if getattr(pfs[i], 'signals%s' % i).value == signals[0]:
-                a, d = '16', '32'
-            setDevSigNum(str(i), a, d)
-        
-        par = 'emergency'
-        for k in ('prehistory_ms', 'after_history_ms', 'max_storage_time_day'):
-            xml[par][k] = ef[k].value
-        #FIXME ms=>s
-        xml[par]['max_file_length_ms'] = str(int(ef.max_file_length_s.value)*1000)
-
-        par = 'self-recorder'
-        for k in ('live_update_ms', 'analog_delta_percent', 'max_file_length_hour', 'max_storage_time_day'):
-            xml[par][k] = sf[k].value
-
-        xml['data_formats']['comtrade']['codeset'] = ff.codeset.value
-        f = 'BIN'
-        if ff.format.value == comtradeFormats[0]:
-            f = 'ASCII'
-        xml['data_formats']['comtrade']['data_file'] = f
-        print xmlRender(xml)
-        return render.completion(self.title, 'Данные записаны')
 
     def GET(self):
         web.header('Content-Type', 'text/html; charset= utf-8')
-        web.header('Cache-Control', 'no-cache, must-revalidate')        
+        web.header('Cache-Control', 'no-store, no-cache, must-revalidate')
+        web.header('Cache-Control', 'post-check=0, pre-check=0', False)
+        web.header('Pragma', 'no-cache')
         
         rf = recorderForm()
         for k in ('id', 'station_name', 'name'):
             rf[k].value = xml[k] 
         
         pfs = povForms
-        for i in xrange(len(pfs)):
+        for i in pfs.keys():
             getattr(pfs[i], 'pov%s' % i).set_value(xml['device'][str(i)]['in_use'] == "yes")
             si = 0
             if xml['device'][str(i)]['discretes'] == '128': 
@@ -187,6 +143,56 @@ class Recorder:
 
         return render.recorder(rf, pfs, ef, sf, ff, self.title)
 
+    def POST(self):
+        valid = True
+        rf = recorderForm()
+        pfs = povForms
+        ef = emergencyForm()
+        sf = selfRecorderForm()
+        ff = formatForm()
+        
+        valid &= rf.validates()
+        for p in pfs:
+            p.validates()
+        valid &= ef.validates() 
+        valid &= sf.validates() 
+        valid &= ff.validates()
 
-if __name__ == '__main__':
-    pass
+        if not valid:
+            return render.recorder(rf, pfs, ef, sf, ff, self.title)
+        #Запись парметров
+        for k in ('id', 'station_name', 'name'):
+            xml[k] = rf[k].value
+        
+        for i in pfs.keys():
+            inUse = 'yes'
+            if not getattr(pfs[i], 'pov%s' % i).get_value():
+                inUse = 'no'
+            xml['device'][str(i)]['in_use'] = inUse
+
+            a, d = '0', '128'
+            if getattr(pfs[i], 'signals%s' % i).value == signals[0]:
+                a, d = '16', '32'
+            setDevSigNum(str(i), a, d)
+        
+        par = 'emergency'
+        for k in ('prehistory_ms', 'after_history_ms', 'max_storage_time_day'):
+            xml[par][k] = ef[k].value
+        #FIXME ms=>s
+        xml[par]['max_file_length_ms'] = str(int(ef.max_file_length_s.value)*1000)
+
+        par = 'self-recorder'
+        for k in ('live_update_ms', 'analog_delta_percent', 'max_file_length_hour', 'max_storage_time_day'):
+            xml[par][k] = sf[k].value
+
+        xml['data_formats']['comtrade']['codeset'] = ff.codeset.value
+        f = 'BIN'
+        if ff.format.value == comtradeFormats[0]:
+            f = 'ASCII'
+        xml['data_formats']['comtrade']['data_file'] = f
+        
+        rewriteConfigXml()
+        restartFilters()
+        
+        return render.completion(self.title, 'Данные записаны')
+

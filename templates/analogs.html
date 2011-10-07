@@ -2,60 +2,57 @@ $def with (af, title=None)
 $var title: $title
 
 $def showTableHeader():
-    $#FIXME выделить заголовки цветом, 
-    $#например сделать попеременно двухцветными 
+    $#FIXME выделить заголовки цветом,
+    $#например сделать попеременно двухцветными
     <tr>
     <th class="checkbox"></th>
-	$for orderName, orderBy in [('№', 'id'), ('Имя', 'alias'), ('Фаза', 'phase'), ('Компонент', 'circuit_component'),('Ток', 'sinusoid'), ('ADC', 'ADC'), ('Коэф.1', 'coef1'), ('Пост.составл.', 'dc_component'), ('Пуск', 'record'), ('Самописец', 'self-recorder'), ('OPC', 'opc')]:
+    $for orderName, orderBy in [('№', 'id'), ('Имя', 'alias'), ('Фаза', 'phase'), ('Компонент', 'circuit_component'),('Ток', 'sinusoid'), ('ADC', 'ADC'), ('Коэф.1', 'coef1'), ('Пост.составл.', 'dc_component'), ('Пуск', 'record'), ('Самописец', 'self-recorder'), ('OPC', 'opc')]:
         <th id="$orderBy">$orderName</th>
     </tr>
-
-$def getImages(a, h):
-    <a>
-    $for f, img in (('rms','rms.png'), ('zero_phase_sequence','zero_phase_sequence.png'), ('positive_phase_sequence', 'positive_phase_sequence.png'), ('negative_phase_sequence','negative_phase_sequence.png'), ('harmonic', 'harmonic.png'), ('active_power', 'active_power.png'), ('reactive_power','reactive_power.png')):
+$def getNames(a, h):
+    $for f, n in (('rms', 'ДЗ'), ('zero_phase_sequence', 'НП'), ('positive_phase_sequence', 'ПП'), ('negative_phase_sequence', 'ОП'), ('harmonic', 'Г'), ('active_power', 'АМ'), ('reactive_power', 'РМ')):
         $if f in a.keys():
             $if h in a[f].keys():
-                <img src="/static/$img" />
-    </a>
+                <a>$n</a>
 
 <form action="/config/analogs/$af.dev" method=POST>
-    <p>Канал
-        $for dev in xrange(af.devs):
-            $if dev == int(af.dev):
-                <a> [$dev]</a>
-            $else:
-                <a href="/config/analogs/$dev"> $dev</a>
-    </p>
-    <table>
-        $:showTableHeader()
-        $for cb in af.inputs:
-            $ a = cb.data
-            <tr>
-            <td>$:cb.render()</td>
-            <td><a href="/config/analog/$af.dev/$a['id']">$a['id']</a></td>
-            <td>$a['alias']</td>
-            <td>$a['phase']</td>
-            <td>$a['circuit_component']</td>
-            <td>
-            $if a['sinusoid'] == 'yes':
-                ~
-            $else:
-                -    
-            </td>
-            <td>$a['ADC']</td>
-            <td>$a['coef1']</td>
-            <td>$a['dc_component']</td>
-            <td>
-               $:getImages(a, 'analog_emergency')
-            </td>
-            <td>
-                $:getImages(a, 'analog_self-recorder')
-            </td>
-            <td>
-                $:getImages(a, 'analog_opc')
-            </td>
-            </tr>
-    </table>
+<p>Канал
+$for dev in af.devs:
+    $if dev == int(af.dev):
+        <a> [$dev]</a>
+    $else:
+        <a href="/config/analogs/$dev"> $dev</a>
+</p>
+<table>
+$:showTableHeader()
+$for cb in af.inputs:
+    $ a = cb.data
+    <tr>
+    <td>$:cb.render()</td>
+    <td><a href="/config/analog/$af.dev/$a['id']">$a['id']</a></td>
+    <td>$a['alias']</td>
+    <td>$a['phase']</td>
+    <td>$a['circuit_component']</td>
+    <td>
+    $if a['sinusoid'] == 'yes':
+        ~
+    $else:
+        -
+    </td>
+    <td>$a['ADC']</td>
+    <td>$a['coef1']</td>
+    <td>$a['dc_component']</td>
+    <td>
+        $:getNames(a, 'analog_emergency')
+    </td>
+    <td>
+        $:getNames(a, 'analog_self-recorder')
+    </td>
+    <td>
+        $:getNames(a, 'analog_opc')
+    </td>
+    </tr>
+</table>
 
-    <p><button type="submit" id="Записать" name="Записать">Применить</button></p>
+<p><button type="submit" id="Записать" name="Записать">Применить</button></p>
 </form>

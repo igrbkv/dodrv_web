@@ -2,7 +2,8 @@
 
 import web
 from web import form
-from config import render, xml, xmlRender
+from config import render, xml, rewriteConfigXml 
+from utils import restartFilters
 
 def createDiscretesForm(dev):
     cb = (form.Checkbox('d%s' % i, value = i, 
@@ -12,17 +13,28 @@ def createDiscretesForm(dev):
     df = form.Form(*cb)
     return df
 
+title = 'Дискреты'
+
+class PreDiscretes:
+    def GET(self):
+        for i in xrange(len(xml['device'])):
+            if xml['device'][str(i)]["exists"]:
+                raise web.seeother('/config/discretes/%s' % i)
+        return render.emptypage(title = title)
+
 class Discretes:
-    title = 'Дискреты'
 
     def GET(self, dev):
-        web.header('Cache-Control', 'no-cache, must-revalidate')        
+        web.header('Content-Type', 'text/html; charset= utf-8')
+        web.header('Cache-Control', 'no-store, no-cache, must-revalidate')
+        web.header('Cache-Control', 'post-check=0, pre-check=0', False)
+        web.header('Pragma', 'no-cache')
         df = createDiscretesForm(dev)
-        df.devs = len(xml['device']) 
+        df.devs = (i for i in xrange(len(xml['device'])) 
+            if xml['device'][str(i)]['exists']) 
         df.dev = dev
             
-        #print xmlRender(xml)
-        return render.discretes(df, title = self.title)
+        return render.discretes(df, title = title)
 
     def POST(self, dev):
         df = createDiscretesForm(dev)
@@ -31,8 +43,9 @@ class Discretes:
             inUse = 'no'
             if cb.get_value():
                 inUse = 'yes' 
-            print cb.data['id'], inUse
             xml['device'][dev]['discrete'][cb.data['id']]['in_use'] = inUse
         
-        #print xmlRender(xml)
-        return render.completion(self.title)
+        rewriteConfigXml()
+        restartFilters(dev)
+
+        return render.completion(title)

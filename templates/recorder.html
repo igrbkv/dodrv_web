@@ -4,7 +4,7 @@ $var title: $_title
     $:rf.render()
     <p>Устройства</p>
     <table>
-    $for p in pfs:
+    $for p in pfs.values():
         <tr>
         $for i in p.inputs:
             <th><label for="$i.id">$i.description</label></th><td>$:i.render()</td>        
