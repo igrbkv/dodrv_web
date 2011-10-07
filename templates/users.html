@@ -1,0 +1,41 @@
+$def with (ud, nuf, title=None)
+$var title: $title
+
+$def showTableHeader():
+    <tr>
+    <th class="checkbox">Удалить</th>
+    <th id="user">Пользователь</th>
+    <th id="password">Пароль</th>
+    <th id="info">Доп. инфо</th>
+    <th id="err"></th>
+    </tr>
+
+<form action="/config/users" method=POST>
+    <table>
+        $if ud:
+            $:showTableHeader()
+            $for k, v in ud.iteritems():
+                <tr>
+                $ note = None
+                $for u in v.inputs:
+                    $if u.is_hidden():
+                        <td>$u.name</td>
+                    $else:
+                        <td>$:u.render()</td>
+                        $ note = note or u.note
+                <td><strong class="wrong">$note</strong></td>
+                </tr>
+        $if nuf:
+            <tr><td><b>Новый пользователь</b></td></tr>
+            <tr>
+                <td></td>
+                $ note = None
+                $for u in nuf.inputs:
+                    <td>$:u.render()</td>
+                    $ note = note or u.note
+                <td><strong class="wrong">$note</strong></td>
+                <td></td>
+            </tr>
+    </table>
+    <p><button type="submit" id="Применить" name="Применить">Применить</button></p>
+</form>

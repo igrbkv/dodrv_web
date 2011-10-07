@@ -1,0 +1,13 @@
+$def with (sys,title=None)
+$var title: $title
+
+<form action="/" method=POST>
+</form>
+<table>
+    <tr><td>Время регистратора:</td><td>$sys[5]</td></tr>
+    <tr><td>Загрузка процессора:</td><td>$sys[4]%</td></tr>
+    <tr><td>Используется памяти:</td><td>$sys[3]% ($sys[2]kB)</td></tr>
+    <tr><td>Занято на диске:</td><td>$sys[1] ($sys[0]B)</td></tr>
+</table>
+<table>
+</table>
