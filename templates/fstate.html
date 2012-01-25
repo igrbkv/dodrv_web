@@ -1,0 +1,42 @@
+$def with (dev, filters, title=None)
+$var title: $title
+
+$def showTableHeader():
+    <tr>
+	$for orderName, orderBy in [('Имя', 'alias'), ('Нижний предел', 'bottom_theshold'), ('Значение', 'value'), ('Верхний предел', 'top_threshold')]:
+        <th id="$orderBy">$orderName</th>
+    </tr>
+
+
+<p>Канал
+    $for d in getDevs():
+        $if dev == d:
+            <a> [$dev]</a>
+        $else:
+            <a href="/state/discretes/$d"> $d</a>
+
+</p>
+<table>
+    $:showTableHeader()
+    $for k, v in filters.iteritems():
+        $if v:
+            <tr>
+            <td colspan="4">$k</td>
+            </tr>
+            $for i in v:
+                <tr>
+                <td>$i[0]</td>
+                <td>$i[1]</td>
+                <td>
+                $if i[2][0]:
+                    $# выделить синим цветом 
+                    <em>$i[2][0]</em>
+                $elif i[2][2]:
+                    <strong>$i[2][2]</strong>
+                $else:
+                    $i[2][1]
+                </td>
+                <td>$i[3]</td>
+                </tr>
+</table>
+

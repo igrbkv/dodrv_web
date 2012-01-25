@@ -17,8 +17,8 @@ $def getNames(a, h):
 
 <form action="/config/analogs/$af.dev" method=POST>
 <p>Канал
-$for dev in af.devs:
-    $if dev == int(af.dev):
+$for dev in getDevs():
+    $if dev == af.dev:
         <a> [$dev]</a>
     $else:
         <a href="/config/analogs/$dev"> $dev</a>
@@ -26,7 +26,7 @@ $for dev in af.devs:
 <table>
 $:showTableHeader()
 $for cb in af.inputs:
-    $ a = cb.data
+    $ a = getAnalog(af.dev, cb.value)
     <tr>
     <td>$:cb.render()</td>
     <td><a href="/config/analog/$af.dev/$a['id']">$a['id']</a></td>

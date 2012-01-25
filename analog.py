@@ -79,6 +79,7 @@ def createForm(pref, dev = None, idx = None):
         form.Textbox(pref_ + 'bottom_threshold', 
             form.regexp(FLOAT_REGEXP, MUST_BE_POSITIVE_NUMBER_NOTE),
             description = 'Нижняя граница'),
+        form.Dropdown(pref_ + 'max_duration_s', ['1', '3', '5', '10', '30'], description = 'Макс. длительность регистрации, с'),
         form.Checkbox(pref_ + 'analog_self-recorder', value = 'value', description = 'Запись в самописец'),
         form.Textbox(pref_ + 'analog_delta_percent', 
             form.regexp(FLOAT_REGEXP, MUST_BE_POSITIVE_NUMBER_NOTE),
@@ -135,7 +136,7 @@ class Analog:
                 self.a[pref][h] = {}
                 keys = []
                 if h == 'analog_emergency':
-                    keys += ('bottom_threshold', 'top_threshold')
+                    keys += ('bottom_threshold', 'top_threshold', 'max_duration_s')
                 elif h == 'analog_self-recorder':
                     keys.append('analog_delta_percent')
                 for k in keys:

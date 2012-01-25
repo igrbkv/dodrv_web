@@ -1,4 +1,4 @@
-$def with (sys,title=None)
+$def with (sys, pov, title=None)
 $var title: $title
 
 <form action="/" method=POST>
@@ -9,5 +9,20 @@ $var title: $title
     <tr><td>Используется памяти:</td><td>$sys[3]% ($sys[2]kB)</td></tr>
     <tr><td>Занято на диске:</td><td>$sys[1] ($sys[0]B)</td></tr>
 </table>
-<table>
-</table>
+<h3>Каналы</h3>
+$if pov:
+    <table>
+    $for v in pov:
+        <tr>
+            <td>ПОВ$v[0]</td>
+            <td>
+                $if v[1] == 1:
+                    Работает
+                $elif v[1] == 0:
+                    Не используется
+                $else:
+                    <strong>Данные не поступают</strong>
+            </td>
+            <td><a href=/state/system/pov/$v[0]>Статистика...</a></td>
+        </tr>
+    </table>

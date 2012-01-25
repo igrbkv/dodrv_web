@@ -1,0 +1,35 @@
+$def with (page, pages, files, title=None)
+$var title: $title
+
+$def showTableHeader():
+    <tr>
+	$for orderName, orderBy in [('№', 'id'), ('Канал', 'pov'), ('Время', 'time'), ('Файлы', 'files')]:
+        <th id="$orderBy">$orderName</th>
+    </tr>
+
+<p>Страницы
+$for p in getPages(page, pages):
+    $if p == '...': 
+        <a> $p</a>
+    $elif int(p) == page:
+        <a> [$p]</a>
+    $else:
+        <a href="/files/emergency/$p"> $p</a>
+</p>
+
+<table>
+$:showTableHeader()
+$ fn = filesInPage()*(page-1)+1
+$for f in files:
+    <tr>
+    <td>$fn.</td>
+    <td>$f[1]</td>
+    <td>$fmtDate(f[2])</td>
+    <td>
+        $for e in f[3]:
+            <a href="/emergency/$f[0]_$f[1]_$f[2]$e"> $e.strip('.')</a>
+    </td>
+    </tr>
+    $ fn = fn + 1
+</table>
+

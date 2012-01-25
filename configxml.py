@@ -30,8 +30,8 @@
         </device>
     </devices>
     <opc scan_rate_ms="100"/>
-    <emergency prehistory_ms="200" after_history_ms="5000" max_file_length_ms="10000"/>
-    <self-recorder live_update_ms="10000" analog_delta_percent="5" max_file_length_hour="1"/>
+    <emergency prehistory_ms="200" after_history_ms="5000" max_file_length_s="10" keeping_period_days="1"/>
+    <self-recorder live_update_ms="10000" analog_delta_percent="5" max_file_length_hour="1" keeping_time_days="1"/>
     <data_formats choice="comtrade">
         <comtrade codeset="CP1251" data_file="ASCII"/>
     </data_formats>
@@ -127,7 +127,7 @@ class ConfigParser(xml.sax.ContentHandler):
             self.curFilter = tag
          
         elif tag == 'analog_emergency':
-            self.recorder['device'][self.curDevice]['analog'][self.curAnalog][self.curFilter][tag] = self._getObj(attr, ('top_threshold', 'bottom_threshold', 'max_duration_ms'))
+            self.recorder['device'][self.curDevice]['analog'][self.curAnalog][self.curFilter][tag] = self._getObj(attr, ('top_threshold', 'bottom_threshold', 'max_duration_s'))
         
         elif tag == 'analog_self-recorder':
             self.recorder['device'][self.curDevice]['analog'][self.curAnalog][self.curFilter][tag] = self._getObj(attr, ('analog_delta_percent',))
@@ -156,10 +156,10 @@ class ConfigParser(xml.sax.ContentHandler):
             self.recorder[tag] = self._getObj(attr, ('scan_rate_ms',))
         
         elif tag == 'emergency':
-            self.recorder[tag] = self._getObj(attr, ('prehistory_ms', 'after_history_ms', 'max_file_length_ms', 'max_storage_time_day'))
+            self.recorder[tag] = self._getObj(attr, ('prehistory_ms', 'after_history_ms', 'max_file_length_s', 'keeping_period_days'))
         
         elif tag == 'self-recorder':
-            self.recorder[tag] = self._getObj(attr, ('live_update_ms', 'analog_delta_percent', 'max_file_length_hour', 'max_storage_time_day'))
+            self.recorder[tag] = self._getObj(attr, ('live_update_ms', 'analog_delta_percent', 'max_file_length_hour', 'keeping_time_days'))
         
         elif tag == 'data_formats':
             self.recorder[tag] = self._getObj(attr, ('choice',))

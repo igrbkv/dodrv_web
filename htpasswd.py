@@ -34,10 +34,8 @@ class Htpasswd:
             del self.users[name]
 
     def save(self):
-        print self.users
         lst = ['%s:%s:%s\n' % (k.encode('utf-8'), v[0].encode('utf-8'), v[1].encode('utf-8')) 
             for k, v in self.users.iteritems()]
-        print lst
         with open(self.path, 'w+') as f:
             f.writelines(lst)
     def userValid(self, login, psw):

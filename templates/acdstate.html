@@ -1,0 +1,30 @@
+$def with (dev, adcs, title=None)
+$var title: $title
+<p>Канал
+$for d in getDevs():
+    $if dev == d:
+        <a> [$dev]</a>
+    $else:
+        <a href="/state/adcs/$d"> $d</a>
+</p>
+$if adcs:
+    <table>
+    <tr>
+        $for i in adcs[0]:
+        <th id="$i">$i</th>
+    </tr>
+    $for r in adcs[1:]:
+        <tr>
+        $for c in r:
+            <td>
+            $ v = int(c)
+            $if v < 0:
+                <em>$c</em>
+            $elif v > 0:
+                <strong>$c</strong>
+            $else:
+                $c
+            </td>
+        </tr>
+</table>
+<p><a href="/state/analogs/$d">Текущие данные аналогов</a></p>

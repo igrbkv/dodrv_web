@@ -39,12 +39,13 @@ povForms = createPovForms()
 emergencyForm = form.Form(
     form.Dropdown('prehistory_ms', ['0', '100', '200', '500', '1000'], description = 'Предыстория (мс)'),
     form.Dropdown('after_history_ms', ['0', '100', '500', '1000', '5000', '10000'], description = 'Послеистория (мс)'),
-    form.Textbox('max_file_length_s',  
-        form.Validator(notes[1], bool),
-        form.regexp('\d+', notes[1]),
-        form.Validator(notes[1], lambda i: int(i) >= 0 and int(i) <= 60),
-        description = 'Макс. длина файла аварии (с)'),
-    form.Dropdown('max_storage_time_day', ['0', '1', '3', '8', '30', '60'], description = 'Макс.время хранения (дней)'))
+    #FIXME Не реализовано в emergencyfile.cpp
+    #form.Textbox('max_file_length_s',  
+    #    form.Validator(notes[1], bool),
+    #    form.regexp('\d+', notes[1]),
+    #    form.Validator(notes[1], lambda i: int(i) >= 0 and int(i) <= 60),
+    #    description = 'Макс. длина файла аварии (с)'),
+    form.Dropdown('keeping_period_days', ['1', '3', '8', '30', '60'], description = 'Макс.время хранения (дней)'))
 
 selfRecorderForm = form.Form(
     form.Dropdown('live_update_ms', ['1000', '2000', '5000', '10000'], description = 'Контрольный период записи(мс)'),
@@ -54,7 +55,7 @@ selfRecorderForm = form.Form(
         form.Validator(notes[2], lambda v: float(v) >= .0 and float(v) <= 100.),
         description = 'Порог изменения (%)'), 
     form.Dropdown('max_file_length_hour', ['1', '2', '3', '6', '12'], description = 'Макс.длина файла (час)'),
-    form.Dropdown('max_storage_time_day', ['0', '1', '3', '8'], description = 'Макс.время хранения (дней)'))
+    form.Dropdown('keeping_time_days', ['1', '3', '8', 15], description = 'Макс.время хранения (дней)'))
     
 formatForm = form.Form(
     form.Dropdown('format', comtradeFormats, description = 'Формат файлов данных'),
@@ -123,14 +124,14 @@ class Recorder:
         
         ef = emergencyForm()
         par = 'emergency'
-        for k in ('prehistory_ms', 'after_history_ms', 'max_storage_time_day'):
+        for k in ('prehistory_ms', 'after_history_ms', 'keeping_period_days'):
             ef[k].value = xml[par][k] 
-        #FIXME ms=>s
-        ef.max_file_length_s.value = str(int(xml['emergency']['max_file_length_ms'])/1000)
+        #FIXME Не реализовано в emergencyfile.cpp
+        #ef.max_file_length_s.value = str(int(xml['emergency']['max_file_length_s']))
 
         sf = selfRecorderForm()
         par = 'self-recorder'
-        for k in ('live_update_ms', 'analog_delta_percent', 'max_file_length_hour', 'max_storage_time_day'):
+        for k in ('live_update_ms', 'analog_delta_percent', 'max_file_length_hour', 'keeping_time_days'):
             sf[k].value = xml[par][k] 
         
         ff = formatForm()
@@ -176,13 +177,13 @@ class Recorder:
             setDevSigNum(str(i), a, d)
         
         par = 'emergency'
-        for k in ('prehistory_ms', 'after_history_ms', 'max_storage_time_day'):
+        for k in ('prehistory_ms', 'after_history_ms', 'keeping_period_days'):
             xml[par][k] = ef[k].value
-        #FIXME ms=>s
-        xml[par]['max_file_length_ms'] = str(int(ef.max_file_length_s.value)*1000)
+        #FIXME Не реализовано в emergencyfile.cpp
+        #xml[par]['max_file_length_s'] = str(int(ef.max_file_length_s.value))
 
         par = 'self-recorder'
-        for k in ('live_update_ms', 'analog_delta_percent', 'max_file_length_hour', 'max_storage_time_day'):
+        for k in ('live_update_ms', 'analog_delta_percent', 'max_file_length_hour', 'keeping_time_days'):
             xml[par][k] = sf[k].value
 
         xml['data_formats']['comtrade']['codeset'] = ff.codeset.value

@@ -1,0 +1,16 @@
+$def with (pov, title=None)
+$var title: $title
+
+<form action="/" method=POST>
+</form>
+<table>
+    <tr><td>Принято байт:</td><td>$pov['bytes_read']</td></tr>
+    <tr><td>Переполнений FIFO:</td><td>$pov['err_fifo_overflow']</td></tr>
+    <tr><td>Пропущено фреймов:</td><td>$pov['err_skipped_frame']</td></tr>
+    <tr><td>Ошибок заголовков фреймов:</td><td>$pov['err_frame_header']</td></tr>
+    <tr><td>Ошибок конца фрейма:</td><td>$pov['err_frame_close_byte']</td></tr>
+    <tr><td>Ошибок msb байта:</td><td>$pov['err_msb_byte']</td></tr>
+    <tr><td>Переполнений буфера драйвера:</td><td>$pov['err_buffer_overflow']</td></tr>
+    <tr><td>Чтений данных из драйвера:</td><td>$pov['read_counter']</td></tr>
+    <tr><td>Таймаутов чтения драйвера:</td><td>$pov['err_time_out']</td></tr>
+</table>

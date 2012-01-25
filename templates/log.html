@@ -1,0 +1,8 @@
+$def with (data, title=None)
+$var title: $title
+<script type="text/javascript">
+    window.onload=function() {
+        document.getElementsByName('log')[0].scrollTop=document.getElementsByName('log')[0].scrollHeight;
+    };
+</script>
+<textarea name="log" cols="80" rows="30" readonly="true">$data</textarea>

@@ -50,7 +50,7 @@ class Login:
         if lf.valid:
             session.setUser(str(lf.login.value))
             syslog.syslog('Подключился ' + str(lf.login.value))
-            raise web.seeother('/')
+            raise web.seeother('/state/system')
         else:
             lf.password.value = ''
             return render.login(lf, self.title)

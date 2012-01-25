@@ -1,0 +1,28 @@
+$def with (dev, sd, title=None)
+$var title: $title
+
+$def showTableHeader():
+    <tr>
+	$for orderName, orderBy in [('№', 'id'), ('Имя', 'alias'), ('Значение', 'value')]:
+        <th id="$orderBy">$orderName</th>
+    </tr>
+
+
+<p>Канал
+    $for d in getDevs():
+        $if dev == d:
+            <a> [$dev]</a>
+        $else:
+            <a href="/state/discretes/$d"> $d</a>
+
+</p>
+<table>
+    $:showTableHeader()
+    $for i in xrange(len(sd)):
+        <tr>
+        <td>$i</td>
+        <td>$sd[i][0]</td>
+        <td>$sd[i][1]</td>
+        </tr>
+</table>
+

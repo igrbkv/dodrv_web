@@ -16,8 +16,8 @@ $def keyExist(key, dic):
 
 <form action="/config/discretes/$df.dev" method=POST>
     <p>Канал
-    $for ci in df.devs:
-            $if ci == int(df.dev):
+    $for ci in getDevs():
+            $if ci == df.dev:
                 <a> [$ci]</a>
             $else:
                 <a href="/config/discretes/$ci"> $ci</a>
@@ -25,7 +25,7 @@ $def keyExist(key, dic):
     <table>
         $:showTableHeader()
         $for cb in df.inputs:
-            $ d = cb.data
+            $ d = getDiscrete(df.dev, cb.value)
             <tr>
             <td>$:cb.render()</td>
             <td><a href="/config/discrete/$df.dev/$d['id']">$d['id']</a></td>

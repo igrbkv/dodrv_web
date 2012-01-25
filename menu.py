@@ -10,7 +10,8 @@ mainMenu = (
     ('Лог', ( 
         ('', '/log'),)),
     ('Файлы', ( 
-        ('', '/files'),)),
+        ('Самописцы', '/files/recorders'),
+        ('Аварии', '/files/emergencys'),)),
     ('Настройка', (
         ('Смена пароля', '/config/password'),
         ('Пользователи', '/config/users'),
@@ -23,7 +24,7 @@ mainMenu = (
         ('Фильтры', '/state/filters'), 
         ('Дискреты', '/state/discretes'), 
         ('Аналоги', '/state/analogs'), 
-        ('Система', '/'),)),
+        ('Система', '/state/system'),)),
 )
 
 loginMenu = (

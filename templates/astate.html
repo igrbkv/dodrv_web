@@ -1,0 +1,24 @@
+$def with (dev, asl, title=None)
+$var title: $title
+
+$def showTableHeader():
+    <tr>
+    $for orderName, orderBy in [('№', 'id'), ('Имя', 'alias'), ('ДЗ 1', 'rms1'), ('ДЗ 2', 'rms2'),('Угол', 'angle'), ('График', 'grafic')]:
+        <th id="$orderBy">$orderName</th>
+    </tr>
+<p>Канал
+$for d in getDevs():
+    $if dev == d:
+        <a> [$dev]</a>
+    $else:
+        <a href="/state/analogs/$d"> $d</a>
+</p>
+<table>
+$:showTableHeader()
+$for a in asl:
+    <tr>
+    $for v in a:
+        <td>$v</td>
+    </tr>
+</table>
+<p><a href="/state/acds/$d">Данные с АЦП</a></p>
