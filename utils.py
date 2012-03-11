@@ -44,6 +44,17 @@ def restartFilters(which=''):
     except:
         syslog.syslog('Ошибка перезапуска ' + suf)
 
+def service(name, operation):
+    '''
+    Выполнить <operatiion> над сервисом <name>
+    '''
+    try:
+        p = Popen('/etc/init.d/' + name + operation, shell=False)
+        waitpid(p.pid, 0)
+        return True 
+    except:
+        return False
+
 def readShmem(dev):
     '''
     Считать данные из разделяемой памяти устройства dev как массив строк

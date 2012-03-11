@@ -25,6 +25,7 @@ urls = (
     '/config/analogs/(\d+)', 'analogs.Analogs',
     '/config/analog/(\d+)/(\d+)', 'analog.Analog',
     '/config/users', 'users.Users',
+    '/config/network', 'network.Network',
     '/state/system', 'state.System',
     '/state/system/pov/(\d+)', 'state.PovStatistic',
     '/state/discretes', 'dstate.DState',

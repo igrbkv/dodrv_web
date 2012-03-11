@@ -1,0 +1,7 @@
+$def with (eth, title=None)
+$var title: $title
+
+<form action="/config/network" method=POST>
+$:eth.render()
+<p><button type="submit" id="Записать" name="Записать">Применить</button></p>
+</form>
