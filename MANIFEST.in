@@ -1,0 +1,5 @@
+include MANIFEST.in
+recursive-include static *.css *.ico *.png
+recursive-include templates *.html *.xml
+include htpasswd
+include filters.conf

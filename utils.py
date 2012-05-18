@@ -3,7 +3,7 @@
 import types
 from shutil import copy, move
 from subprocess import Popen
-from os import waitpid, close
+from os import waitpid, close, tmpnam, rename
 import syslog
 import mmap 
 import posix_ipc 
@@ -115,4 +115,12 @@ def spark_string(ints):
     step = ((max(ints)) / float(len(ticks) - 1)) or 1
     ss = u''.join(ticks[int(round(i / step))] for i in ints)
     return ss.encode('utf-8')
- 
+
+def rewrite(fpath, lines):
+    '''
+    Перезаписывает файл fpath содержимым lines 
+    '''
+    tpath = tmpnam()
+    with open(tpath, 'w') as mc:
+        mc.writelines(lines)
+    rename(tpath, fpath)

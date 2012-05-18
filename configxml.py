@@ -15,15 +15,17 @@
     <devices>
         <device id="0" in_use="yes" sample_rate="1800" frequency="50" analogs="16" discretes="32" skew="yes">
             <analogs>
-                <analog id="0" in_use="yes" dc_component="0" ADC="MV-200" alias="Ia" coef1="1.0" phase="A">
+                <analog id="0" in_use="yes" dc_component="0" ADC="MV-200" alias="Ia" coef1="1.0" phase="A"/>
                 ...
             </analogs>
             <discretes>
-                <discrete id="0" in_use="yes" inverted="yes" alias="Вкл." phase="" circuit_component="">
+                <discrete id="0" in_use="yes" inverted="yes" alias="Вкл." phase="" circuit_component=""/>
                 ...
             </discretes>
         </device>
         <device id="1" in_use="yes" sample_rate="1800" frequency="50" analogs="16" discretes="32" skew="yes">
+            ...
+        </device>
         ...
         <device id="5" in_use="yes" sample_rate="1800" frequency="50" analogs="16" discretes="32" skew="yes">
             ...

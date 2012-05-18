@@ -1,7 +1,14 @@
-$def with (eth, title=None)
+$def with (eth, mdm, inp, out, title=None)
 $var title: $title
 
 <form action="/config/network" method=POST>
-$:eth.render()
-<p><button type="submit" id="Записать" name="Записать">Применить</button></p>
+    <p>Настройка сетевого интерфейса.</p>    
+    $:eth.render()
+    <p>Настройка модема и протокола PPP.</p>    
+    $:mdm.render()
+    <p>Входящие подключения.</p>    
+    $:inp.render()
+    <p>Исходящие подключения.</p>    
+    $:out.render()
+    <p><button type="submit" id="Записать" name="Записать">Применить</button></p>
 </form>

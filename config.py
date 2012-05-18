@@ -4,8 +4,10 @@ import web
 import utils, formatting
 import configxml
 
-CONFIG_XML = 'filters.conf'  #'/etc/dodrv/filters.conf'
-PASSWD_FILE_PATH = 'htpasswd'   #'/etc/dodrv/htpasswd'
+DEBUG_PATH = 'debug'
+
+CONFIG_XML = DEBUG_PATH + '/etc/dodrv/filters.conf'
+PASSWD_FILE_PATH = DEBUG_PATH + '/etc/dodrv/htpasswd'
 # очистка сессий при перезапуске
 SESSIONS_PATH = '/tmp/sessions'
 
@@ -13,20 +15,16 @@ MAX_USERS = 15
 
 MAX_POV = 6
 
-#POV_STAT = '/proc/driver/pov'
-POV_STAT = 'cat_driver_proc.txt'
+POV_STAT = DEBUG_PATH + '/proc/driver/pov'
 
-#LOG_PATH = '/var/log/everything'
-LOG_PATH = '/home/igor/tmp'
+LOG_PATH = DEBUG_PATH + '/var/log/everything'
 
 FILES_IN_PAGE = 20
 
 # Файлы аварий
-#EMERGENCY_PATH = '/dodrv/emergency'
-EMERGENCY_PATH = '/home/igor/workspace/dodrv/tests/emergency'   
+EMERGENCY_PATH = DEBUG_PATH + '/dodrv/emergency'
 # Файлы самописца 
-#RECORDER_PATH = '/dodrv/recorder'
-RECORDER_PATH = '/home/igor/workspace/dodrv/tests/recorder'   
+RECORDER_PATH = DEBUG_PATH + '/dodrv/recorder'
 
 #для utils.getPages 
 PAGES_AROUND = 5
