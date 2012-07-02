@@ -15,6 +15,7 @@ import session
 urls = (
     '/login', 'login.Login',
     '/logout', 'login.Logout',
+    '/noaccess', 'login.Noaccess',
     '/log', 'log.Log',
     '/config/password', 'login.Password',
     '/config/recorder', 'recorder.Recorder',
@@ -25,7 +26,9 @@ urls = (
     '/config/analogs/(\d+)', 'analogs.Analogs',
     '/config/analog/(\d+)/(\d+)', 'analog.Analog',
     '/config/users', 'users.Users',
+    '/config/time', 'dotime.Time',
     '/config/network', 'network.Network',
+    '/config/service', 'service.Service',
     '/state/system', 'state.System',
     '/state/system/pov/(\d+)', 'state.PovStatistic',
     '/state/discretes', 'dstate.DState',
@@ -35,17 +38,18 @@ urls = (
     '/state/acds/(\d+)', 'astate.ACDState',
     '/state/filters', 'fstate.FState',
     '/state/filters/(\d+)', 'fstate.FState',
+    '/state/network', 'netstate.NetState',
+    '/state/syncronization', 'syncstate.SyncState',
     '/files/recorders', 'files.Recorders',
     '/files/recorders/(\d+)', 'files.Recorders',
     '/files/emergencys', 'files.Emergencys',
     '/files/emergencys/(\d+)', 'files.Emergencys',
 )
 
-
 app = web.application(urls, globals())
 session.addSessions(app)
 
-if __name__=='__main__': 
+if __name__ == '__main__': 
     #web.internalerror = web.debugerror
     app.run()
 

@@ -2,7 +2,7 @@
 
 import types
 from shutil import copy, move
-from subprocess import Popen
+from subprocess import Popen, check_call, CalledProcessError, PIPE
 from os import waitpid, close, tmpnam, rename
 import syslog
 import mmap 
@@ -30,6 +30,41 @@ def rewrite(filePath, str):
 
     return True
 
+def restart_service(name):
+    '''
+    Перезапуск сервиса <name>
+    '''
+    path = '/etc/init.d' + name
+    try:
+        check_call(['path', 'restart'])
+        syslog.syslog('Сервис ' + name + ' перезапущен')
+    except:
+        syslog.syslog('Ошибка перезапуска сервиса ' + name)
+
+def add_service(name, level = 'default'):
+    '''
+    Добавление сервиса в runlevel level и запуск
+    '''
+    try:
+        check_call(['rc-update', 'add', name, level])
+        syslog.syslog('Сервис ' + name + ' запущен')
+    except:
+        syslog.syslog('Ошибка запуска сервиса ' + name)
+
+def del_service(name, level = 'default'):
+    '''
+    Удаление сервиса из runlevel level и останов
+    '''
+    try:
+        check_call(['rc-update', 'del', name, level])
+        syslog.syslog('Сервис ' + name + ' остановлен')
+    except CalledProcessError:
+        # Игнорировать ошибку для уже остановленного сервиса
+        pass
+    except:
+        syslog.syslog('Ошибка останова сервиса ' + name)
+
+
 def restartFilters(which=''):
     if which:
         suf = 'фильтра pov' + which.encode('utf-8')
@@ -43,17 +78,6 @@ def restartFilters(which=''):
         syslog.syslog('Перезапуск ' + suf)
     except:
         syslog.syslog('Ошибка перезапуска ' + suf)
-
-def service(name, operation):
-    '''
-    Выполнить <operatiion> над сервисом <name>
-    '''
-    try:
-        p = Popen('/etc/init.d/' + name + operation, shell=False)
-        waitpid(p.pid, 0)
-        return True 
-    except:
-        return False
 
 def readShmem(dev):
     '''
@@ -124,3 +148,24 @@ def rewrite(fpath, lines):
     with open(tpath, 'w') as mc:
         mc.writelines(lines)
     rename(tpath, fpath)
+
+def sync_mode():
+    '''
+    Текущий режим синхронизации
+    return  'manually', 'ntp' или 'gps'
+    '''
+    ntpd = False
+    ntp_pps = False
+    par = ['rc-status']
+    rcs = Popen(par, stdout = PIPE).communicate()[0].split('\n')
+    for rc in rcs:
+        if not ntpd and 'ntpd' in rc and 'started' in rc:
+            ntpd = True
+        if not ntp_pps and 'ntp-pps' in rc and 'started' in rc:
+            ntp_pps = True
+    if ntpd:
+        if ntp_pps:
+            return 'gps'
+        return 'ntp'
+    return 'manually'
+ 

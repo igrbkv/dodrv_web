@@ -1,0 +1,15 @@
+$def with (tz, modes, tm, gps, ntp, title=None)
+$var title: $title
+
+<form action="/config/time" method=POST>
+    <p>Установка временной зоны</p>    
+    $:tz.render()
+    <p>Установка даты и времени</p>    
+    $:modes[0].render()
+    $:tm.render()
+    $:modes[1].render()
+    $:gps.render()
+    $:modes[2].render()
+    $:ntp.render()
+    <p><button type="submit" id="Записать" name="Записать">Применить</button></p>
+</form>

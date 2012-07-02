@@ -1,0 +1,7 @@
+$def with (_title, text='Требуются права администратора', button=None)
+$var title: $_title
+<form method=GET>
+    <p>$text</p>
+    $if button:
+        <button type="submit">$button</button>
+</form>

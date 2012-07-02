@@ -34,7 +34,7 @@
 '''
 from web import form
 from config import render, DEBUG_PATH
-from utils import service, rewrite 
+from utils import restart_service, rewrite 
 from http import nocache
 from configobj import ConfigObj
 from IPy import IP
@@ -513,7 +513,7 @@ class Network:
         if net_changed:
             self.net_conf.update(net)
             self._writeNetConf()
-            service('eth0', 'restart')
+            restart_service('eth0')
 
         if mgetty_changed:
             self.mgetty_conf.update(mgetty)

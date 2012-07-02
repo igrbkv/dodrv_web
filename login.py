@@ -101,3 +101,7 @@ class Password:
         web.header('Content-Type', 'text/html; charset= utf-8')
         cpf = changePasswordForm()
         return render.form(cpf, self.title)
+
+class Noaccess:
+    def GET(self):
+        return render.noaccess('Нет доступа')

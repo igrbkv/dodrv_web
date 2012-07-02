@@ -5,22 +5,23 @@
 mainMenu = (
     ('Выход', (
         ('', '/logout'),)),
-    ('Сервис', (
-        ('', '/service'),)),
     ('Лог', ( 
         ('', '/log'),)),
     ('Файлы', ( 
         ('Самописцы', '/files/recorders'),
         ('Аварии', '/files/emergencys'),)),
     ('Настройка', (
+        ('Сервис', '/config/service'),
         ('Смена пароля', '/config/password'),
         ('Пользователи', '/config/users'),
+        ('Время', '/config/time'), 
         ('Сеть', '/config/network'), 
-        ('ОМП', '/config/omp'),
         ('Дискреты', '/config/discretes'), 
         ('Аналоги', '/config/analogs'), 
         ('Регистратор', '/config/recorder'))),
     ('Состояние', (
+        ('Синхронизация', '/state/syncronization'), 
+        ('Сеть', '/state/network'), 
         ('Фильтры', '/state/filters'), 
         ('Дискреты', '/state/discretes'), 
         ('Аналоги', '/state/analogs'), 

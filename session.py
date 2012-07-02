@@ -7,9 +7,13 @@ from os import path, mkdir
 def authProcessor(handle):
     """Проверка авторизирован ли пользователь"""
     path = web.ctx.path
-    if not getUser() and path != '/login':
+    usr = getUser()
+    print usr, path
+    if not usr and path != '/login':
         raise web.seeother('/login')
-    else:
+    elif usr != 'admin' and path.startswith('/config'):
+        raise web.seeother('/noaccess')
+    else:    
         return handle()
 
 
