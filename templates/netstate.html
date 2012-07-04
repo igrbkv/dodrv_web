@@ -1,0 +1,10 @@
+$def with (ifc, title=None)
+$var title: $title
+
+$for f in ifc:
+    <p><table>
+    <tr><th>$f[0]</th><tr>
+    $for l in f[1]:
+        <tr><td>$l</td></tr>
+    </table></p>
+
