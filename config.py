@@ -34,6 +34,8 @@ PAGES_AROUND = 5
 if DEBUG_PATH:
     web.config.debug = True
     cache = False
+else:
+    cache = True
 
 #Таймаут 1 час
 web.config.session_parameters['timeout'] = 60*60
