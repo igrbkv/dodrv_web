@@ -14,5 +14,5 @@ setup(name='doweb',
     packages=['doweb'],
     package_dir=packagedir,
     package_data=packagedata,
-    data_files=datafiles,
+#    data_files=datafiles,
     )
