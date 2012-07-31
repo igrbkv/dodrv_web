@@ -4,7 +4,7 @@
 
 from distutils.core import setup
 
-datafiles=[('/etc/dodrv', ['htpasswd', 'filters.conf']),]
+#datafiles=[('/etc/dodrv', ['htpasswd', 'filters.conf']),]
 packagedir={'doweb': ''}
 packagedata={'doweb': ['static/*.css', 'static/*.png', 'static/*.ico',
     'templates/*.html', 'templates/*.xml']}
