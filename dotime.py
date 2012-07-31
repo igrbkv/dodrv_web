@@ -118,8 +118,8 @@ TIMEZONES = (
     ('Asia/Vladivostok',   'Владивосток (UTC+11)'),
     ('Asia/Magadan',       'Магадан (UTC+12)'))
 
-MONTHS = [u'', u'янв', u'фев', u'мар', u'апр', u'май', u'июн', u'июл', u'авг', u'сен', u'окт',
-   u'ноя', u'дек']
+MONTHS = [u'', u'янв', u'фев', u'мар', u'апр', u'май', u'июн', u'июл', u'авг', 
+    u'сен', u'окт', u'ноя', u'дек']
 DAYS = [''] + [str(i) for i in xrange(1, 32)]
 HOURS = [''] + [str(i) for i in xrange(24)]
 MINUTES = [''] + [str(i) for i in xrange(60)]
@@ -283,9 +283,11 @@ def setNtpConf(port = '', ip = ''):
         adr = ip + ' ' + adr if adr else ip
 
     # /etc/conf.d/ntp-client 
-    config = ConfigObj(NTP_CLIENT_PATH, list_values = False)
-    config['NTPCLIENT_OPTS'] = '"-p -s %s"' % adr
-    config.write()
+    #config = ConfigObj(NTP_CLIENT_PATH, list_values = False)
+    #config['NTPCLIENT_OPTS'] = '"-p -s %s"' % adr
+    #config.write()
+    with open(NTP_CLIENT_PATH, 'w') as f:
+        f.write('NTPCLIENT_OPTS="-p -s %s"' % adr)
 
     # /etc/ntp.conf
     # Удалить fudge и server строки 
