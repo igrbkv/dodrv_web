@@ -306,9 +306,11 @@ def setNtpConf(port = '', ip = ''):
 
 def setConfNtpd():
     # Тупо сбросить параметр NTPD_OPTS
-    config = ConfigObj(NTPD_PATH, list_values = False)
-    config['NTPD_OPTS'] = '""'
-    config.write()
+    #config = ConfigObj(NTPD_PATH, list_values = False)
+    #config['NTPD_OPTS'] = '""'
+    #config.write()
+    with open(NTPD_PATH, 'w') as f:
+        f.write('NTPD_OPTS=""')
 
 class Time:
     def __init__(self):
