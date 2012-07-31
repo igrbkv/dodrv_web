@@ -9,14 +9,14 @@
         >ntpq -p  
         >ntpq: read: Connection refused
     2) Часы синхронизированы
-        ntpq -p в колонке remote адрес сервера начинается с '+' или '*'
+        ntpq -p в колонке remote адрес сервера начинается с '+' или '*' или 'o'
         в колонке reach 377
         ntptime returns code 0 (OK)
         offset - смещение относительно эталоного времени (мкс)
     3) Синхронизируются
         a) ntpq -p в колонке remote адрес сервера начинается с ' '
         в колонке reach не 0, а в t не '-'
-        b) с '+' или '*' 
+        b) с '+' или '*' или 'o'(PPS) 
         ntptime returns code 5 (ERROR)
         в status'е UNSYNC
     4) Нет связи с сервером
@@ -41,6 +41,7 @@ import web
 from config import render
 from utils import sync_mode
 from subprocess import Popen, PIPE
+from dotime import curPort, serverAddress
 
 title = 'Синхронизация'
 
@@ -87,19 +88,25 @@ class SyncState:
         if smode == 'manually':
             text.append(u'Синхронизация не используется.')
         else:
+            if smode == 'gps':
+                server = 'GPS (COM%d)' % curPort()
+            else:
+                server = serverAddress()
             err, pval = ntpqp()
             if err or (pval['t'] == '-' and pval['reach'] == '0'):
-                text.append('Нет связи с сервером времени. Синхронизация невозможна.')
-                if err:
-                    text.append('Ошибка: ' + err)
+                text.append('Нет связи с ' + server +
+                    '. Синхронизация невозможна.')
+                #if err:
+                #    text.append('Ошибка: ' + err)
             else:
-                if pval['remote'][0] in ['+', '*']:
+                if pval['remote'][0] in ['+', '*', 'o']:
                     code, offset = ntptime()
                     if pval['reach'] == '377' and code == '0':
-                        text.append('Часы синхронизированы.')
+                        text.append('Часы синхронизированы c ' + server + '.')
                         text.append('Расхождение с эталонным временем: ' +
                             offset + ' мкс')
                     
                 if not text:
-                    text.append('Связь установлена. Производится корректировка часов.')
+                    text.append('Связь установлена c ' + server + 
+                        '. Производится корректировка часов.')
         return render.syncstate(text, title = title)

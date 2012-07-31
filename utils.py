@@ -30,39 +30,52 @@ def rewrite(filePath, str):
 
     return True
 
+
 def restart_service(name):
     '''
     Перезапуск сервиса <name>
     '''
-    path = '/etc/init.d' + name
+    path = '/etc/init.d/' + name
     try:
         check_call(['path', 'restart'])
         syslog.syslog('Сервис ' + name + ' перезапущен')
     except:
         syslog.syslog('Ошибка перезапуска сервиса ' + name)
 
-def add_service(name, level = 'default'):
+def add_service(name, level = 'default', start = True):
     '''
     Добавление сервиса в runlevel level и запуск
     '''
+    state = 0
     try:
         check_call(['rc-update', 'add', name, level])
-        syslog.syslog('Сервис ' + name + ' запущен')
+        syslog.syslog('Сервис ' + name + ' установлен')
+        if start:
+            state = 1
+            check_call(['/etc/init.d/' + name, 'start'])
+            syslog.syslog('Сервис ' + name + ' запущен')
     except:
-        syslog.syslog('Ошибка запуска сервиса ' + name)
+        syslog.syslog('Ошибка %s сервиса %s' % 
+                ('установки' if state == 0 else 'запуска', name))
 
-def del_service(name, level = 'default'):
+def del_service(name, level = 'default', stop = True):
     '''
     Удаление сервиса из runlevel level и останов
     '''
+    state = 0
     try:
+        if stop:
+            check_call(['/etc/init.d/' + name, 'stop'])
+            syslog.syslog('Сервис ' + name + ' остановлен')
+        state = 1
         check_call(['rc-update', 'del', name, level])
-        syslog.syslog('Сервис ' + name + ' остановлен')
+        syslog.syslog('Сервис ' + name + ' удален')
     except CalledProcessError:
         # Игнорировать ошибку для уже остановленного сервиса
         pass
     except:
-        syslog.syslog('Ошибка останова сервиса ' + name)
+        syslog.syslog('Ошибка %s сервиса %s' % 
+                ('останова' if state == 0 else 'удаления', name))
 
 
 def restartFilters(which=''):

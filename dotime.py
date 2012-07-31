@@ -223,7 +223,7 @@ def curPort():
     '''
     try:
         config = ConfigObj(NTP_PPS_PATH)
-        return int(config['NTP_PPS_DEVICE'][-1])
+        return int(config['NTP_PPS_DEVICE'][-1]) + 1
     except:
         return 0
 
@@ -283,11 +283,10 @@ def setNtpConf(port = '', ip = ''):
         adr = ip + ' ' + adr if adr else ip
 
     # /etc/conf.d/ntp-client 
-    #config = ConfigObj(NTP_CLIENT_PATH, list_values = False)
-    #config['NTPCLIENT_OPTS'] = '"-p -s %s"' % adr
-    #config.write()
     with open(NTP_CLIENT_PATH, 'w') as f:
-        f.write('NTPCLIENT_OPTS="-p -s %s"' % adr)
+        f.write('NTPCLIENT_CMD="sntp"\n')
+        # syslog, set time, timeout 3 (3*5=15 c)
+        f.write('NTPCLIENT_OPTS="-p -s -t 3 %s"\n' % adr)
 
     # /etc/ntp.conf
     # Удалить fudge и server строки 
@@ -306,11 +305,8 @@ def setNtpConf(port = '', ip = ''):
 
 def setConfNtpd():
     # Тупо сбросить параметр NTPD_OPTS
-    #config = ConfigObj(NTPD_PATH, list_values = False)
-    #config['NTPD_OPTS'] = '""'
-    #config.write()
     with open(NTPD_PATH, 'w') as f:
-        f.write('NTPD_OPTS=""')
+        f.write('NTPD_OPTS=""\n')
 
 class Time:
     def __init__(self):
@@ -324,7 +320,10 @@ class Time:
         tzFrm['tz'].set_value(curZone())
 
         modeFrms = modeForms
-        smode = sync_mode()
+        if DEBUG_PATH:
+            smode = 'gps'
+        else:
+            smode = sync_mode()
         for f in modeFrms:
             f[''].set_value(smode)
        
@@ -393,9 +392,10 @@ class Time:
             ntpFrm['server_address'].note = NOTE_INVALID_VALUE
 
         port = COM_PORTS.index(gpsFrm['port'].get_value())
-        if mode == 'gps' and port == 0:
-            valid = False
-            gpsFrm['port'].note = NOTE_INVALID_VALUE
+        if mode == 'gps': 
+            if port == 0:
+                valid = False
+                gpsFrm['port'].note = NOTE_INVALID_VALUE
         
         if not valid:
             modeFrms = modeForms
@@ -424,24 +424,23 @@ class Time:
             setNtpConf()
 
         # Сервисы
-        oldmode = sync_mode()
+        if DEBUG_PATH:
+            lastmode = 'gps'
+        else:
+            lastmode = sync_mode()
+        if lastmode != 'manually':
+            del_service('ntpd')
+            del_service('ntp-client')
+            if lastmode == 'gps':
+                del_service('ntp-pps')
+        
         if mode == 'manually':
-            if oldmode != 'manually':
-                del_service('ntpd')
-                del_service('ntp-client')
-                if oldmode == 'gps':
-                    del_service('ntp-pps')
-            
             if not DEBUG_PATH:
                 setDatetime(int(year), int(month), int(day), int(hour), int(minute))
-        
         else:
             if mode == 'gps':
                 add_service('ntp-pps')
             
-            # быстрая(грубая) установка
-            del_service('ntp-client')
-
             add_service('ntp-client')
             add_service('ntpd')
 
