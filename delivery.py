@@ -21,26 +21,55 @@ FTP-сервер
 [Применить]
 
 2. Файлы конфигурации
-/etc/dodrv/maildelivery:
-<smtp-address>,<tsl>,<account>,<psw>,<phone>,<schedule>,<address>,{E|I|R|L}
+
+/etc/ssmtp/revaliases:
+root:<account>  # igor@parma.spb.ru
+
+/etc/ssmtp/ssmtp.conf:
+mailhub=<ip-address>[:<port>]
+AuthUser=<account>  # igor@parma.spb.ru
+AuthPass=<psw>
+UseTLS=YES|NO
+phone=1234567
+schedule=13-14 18-7
+
+/etc/dodrv/smtpdelivery:
+#<smtp-address>,<tsl>,<account>,<psw>,<phone>,<schedule>,<address>,{E|I|R|L}
+<address>;{E|I|R|L|Z}
 ...
 
 /etc/dodrv/ftpdelivery:
-<ftp-address>,<login>,<psw>,{E|I|R|L},<phone>,<schedule>
+<ftp-address>;<login>;<psw>;{E|I|R|L};<phone>;<schedule>
 ...
 
 /etc/dodrv/recorderdelivery:
-<address>:{E|I|R|L}
+<address>;{E|I|R|L}
 ...
 
-Передача на другой регистратор осуществляется по ftp.
+3. Передача на другой регистратор осуществляется по ftp.
+4. Расписание - только время в формате [Н1-К1 [H2-K2]...[НN-КN]],
+где Н-начало периода в часах, К-конец периода, например:
+12-13 18-7
+5. Формат ftp-адреса:
+[ftp://]<ip_or_address>[:port][/<dir1>...[/<dirN>]]
+в доставке соответственно:
+/dodrv/delivery/ftp/<ip_or_address>[:port][ <dir1>]...[ dirN],
+например:
+ftp://ftp.parma.spb.ru:21/recorders/r1 =>
+/dodrv/delivery/ftp/ftp.parma.spb.ru:21 recorders r1
+и <ftp-address> в /etc/dodrv/ftpdelivery = ftp.parma.spb.ru:21/recorders/r1
+MAX FILE NAME IN EXT4 = 255
+6. FIXME Добавить "сжимать файлы", добавляя тип файла 'Z'
 '''
-import web
 from web import form
 from config import render, DEBUG_PATH
 from http import nocache
+from configobj import ConfigObj
+from re import sub
 
-MAILDELIVERY_PATH = DEBUG_PATH + '/etc/dodrv/maildelivery'
+SSMTPCONF_PATH = DEBUG_PATH + '/etc/ssmtp/ssmtp.conf'
+REVALIASES_PATH = DEBUG_PATH + '/etc/ssmtp/revaliases'
+SMTPDELIVERY_PATH = DEBUG_PATH + '/etc/dodrv/smtpdelivery'
 FTPDELIVERY_PATH = DEBUG_PATH + '/etc/dodrv/ftpdelivery'
 RECORDERDELIVERY_PATH = DEBUG_PATH + '/etc/dodrv/recorderdelivery'
 MAX_DELIVERYS = 10
@@ -48,14 +77,28 @@ MAX_DELIVERYS = 10
 # FIXME 
 # 1. Проверка адресов
 # 2. Проверка расписания
-MAIL_REGEXP = '^[0-9a-zA-Z_.@-]*$'
+MAIL_REGEXP = '^[0-9a-zA-Z_.,@-]*$'
 FTP_REGEXP = '^[0-9a-zA-Z_.-:/]*$'
-SCHEDULE_REGEXP = '^[0-9:ПНВТСРЧБ]*$'
-PHONE_REGEXP = '^[TP]*[0-9#*]*$'
+SCHEDULE_REGEXP = '^[0-9 -]*$'
+PHONE_REGEXP = '^[TP]?[0-9#*-]+$'
 
 NOT_FILLED_NOTE = '* Не заполнено'
 NO_FILES_NOTE = '* Не заданы файлы'
 NO_ADDRESS_NOTE = '* Не задан адрес'
+NOT_VALID = '* Неверное значение'
+
+def scheduleValid(sched):
+    tt=sched.split()
+    try:
+        for t in tt:
+            b, e = t.split('-')
+            l = [str(i) for i in xrange(24)]
+            if b == e or b not in l or e not in l:
+                return False
+    except:
+        return False
+    return True 
+
 
 def createMailForm(idx, args):
     mf = form.Form(
@@ -74,7 +117,7 @@ def createMailForm(idx, args):
 def createFtpForm(idx, args):
     ff = form.Form(
         form.Checkbox(idx + '_ftp_del', value = 'value', checked = False),
-        form.Textbox(idx + '_ftp_adr', value = args[0], readonly = 'on'),
+        form.Textbox(idx + '_ftp_adr', value = args[0], READONLY = 'ON'),
         form.Textbox(idx + '_ftp_login',
             form.Validator('* Длина логина не должна превышать 20 символов', 
             lambda i: len(i) <= 20 ), value = args[1]),
@@ -93,9 +136,10 @@ def createFtpForm(idx, args):
             form.Validator('* Длина номера не должна превышать 20 символов', 
                 lambda i: len(i) <= 20 ), value = args[4]), 
         form.Textbox(idx + '_ftp_sched',
-            form.Validator('* Длина расписания не должна превышать 40 символов',
+            form.Validator('* Длина расписания не должна превышать 20 символов',
             lambda i: len(i) <= 40),
             form.regexp(SCHEDULE_REGEXP, '* Недопустимые символы в расписании'),
+            form.Validator(NOT_VALID, lambda i: scheduleValid(i)),
             value = args[5]))
     return ff
 
@@ -117,11 +161,11 @@ def createRecorderForm(idx, args):
 def readMails():
     d = [] 
     try:
-        with open(MAILDELIVERY_PATH, 'r') as f:
+        with open(SMTPDELIVERY_PATH, 'r') as f:
             lst = f.readlines()
         idx = 0
         for l in lst:
-            l = l.strip().split(';')[6:]
+            l = l.strip().split(';')
             d.append(createMailForm(str(idx), l))
             idx += 1
             
@@ -160,37 +204,44 @@ def readRecorders():
     return d
 
 smtpForm = form.Form(
-    form.Textbox('smtp_server_adr',
+    form.Textbox('mailhub',
         form.Validator('* Длина адреса не должна превышать 40 символов', 
             lambda i: len(i) <= 40 ), description = 'SMTP-сервер[:порт]'),
-    form.Checkbox('smtp_tls', value = 'value', checked = False, 
+    form.Checkbox('UseTLS', value = 'value', checked = False, 
         description = 'Использовать SSL/TLS'),
-    form.Textbox('smtp_acc',
+    form.Textbox('AuthUser',
         form.Validator('* Длина адреса не должна превышать 40 символов', 
             lambda i: len(i) <= 40 ), description = 'Аккаунт'),
-    form.Textbox('smtp_psw',
+    form.Textbox('AuthPass',
         form.Validator('* Длина пароля не должна превышать 20 символов', 
             lambda i: len(i) <= 20 ), description = 'Пароль'),
-    form.Textbox('smtp_phone',
+    form.Textbox('phone',
         form.Validator('* Длина номера не должна превышать 20 символов', 
             lambda i: len(i) <= 20 ), 
         form.regexp(PHONE_REGEXP, '* Недопустимые символы'),
         description = 'Телефон'),
-    form.Textbox('smtp_sched', 
-        form.Validator('* Длина расписания не должна превышать 40 символов',
-        lambda i: len(i) <= 40),
+    form.Textbox('schedule', 
+        form.Validator('* Длина расписания не должна превышать 20 символов',
+        lambda i: len(i) <= 20),
         form.regexp(SCHEDULE_REGEXP, '* Недопустимые символы в расписании'),
+        form.Validator(NOT_VALID, lambda i: scheduleValid(i)),
         description = 'Расписание'))
 
 def readSmtp():
     smtpFrm = smtpForm()
+    ssmtpconf = ConfigObj(SSMTPCONF_PATH)
+    
     try:
-        with open(MAILDELIVERY_PATH, 'r') as f:
+        with open(SMTPDELIVERY_PATH, 'r') as f:
             l = f.readline().strip().split(';')
-        names = ('smtp_server_adr', 'smtp_tls', 'smtp_acc', 'smtp_psw', 
-            'smtp_phone', 'smtp_sched')
+        names = ('mailhub', 'UseTLS', 'AuthUser', 'AuthPass', 'phone', 
+                'schedule')
         for i in xrange(len(names)):
-            smtpFrm[names[i]].set_value(l[i])
+            val = ssmtpconf[names[i]]
+            if names[i] != 'UseTLS':
+                smtpFrm[names[i]].set_value(val)
+            else:
+                smtpFrm[names[i]].set_value(val == 'YES')
     except:
         pass
 
@@ -209,8 +260,8 @@ newMailForm = form.Form(
 
 newFtpForm = form.Form(
     form.Textbox('new_ftp_adr',
-        form.Validator('* Длина адреса не должна превышать 40 символов', 
-        lambda i: len(i) <= 40 ),
+        form.Validator('* Длина адреса не должна превышать 80 символов', 
+        lambda i: len(i) <= 80 ),
         form.regexp(FTP_REGEXP, '* Недопустимые символы в адресе')),
     form.Textbox('new_ftp_login',
         form.Validator('* Длина логина не должна превышать 20 символов', 
@@ -226,8 +277,8 @@ newFtpForm = form.Form(
         form.Validator('* Длина номера не должна превышать 20 символов', 
         lambda i: len(i) <= 20 )),
     form.Textbox('new_ftp_sched',
-        form.Validator('* Длина расписания не должна превышать 40 символов', 
-        lambda i: len(i) <= 40 ),
+        form.Validator('* Длина расписания не должна превышать 20 символов', 
+        lambda i: len(i) <= 20 ),
         form.regexp(SCHEDULE_REGEXP, '* Недопустимые символы в расписании')))
 
 newRecorderForm = form.Form(
@@ -251,6 +302,9 @@ def getTypes(f, n):
     if f[n + '_log'].get_value():
         types += 'L'
     return types
+
+
+
 
 class Delivery:
     title = 'Доставка файлов'
@@ -280,8 +334,8 @@ class Delivery:
         smtpFrm.validates()
         valid &= smtpFrm.valid
 
-        smtpFilled = smtpFrm['smtp_server_adr'].get_value().strip() and\
-            smtpFrm['smtp_acc'].get_value().strip()
+        smtpFilled = smtpFrm['mailhub'].get_value().strip() and\
+            smtpFrm['AuthUser'].get_value().strip()
 
         mailFrms = readMails()
         for i in xrange(len(mailFrms)):
@@ -313,9 +367,13 @@ class Delivery:
 
         # Smtp-параметры д.б. заполнены, если есть доставки 
         if not smtpFilled and (len(mailFrms) or newMailAdr):
-            for n in ('smtp_server_adr', 'smtp_acc'):
+            for n in ('mailhub', 'AuthUser'):
                 smtpFrm[n].note = NOT_FILLED_NOTE
             valid = False
+        #sched = smtpFrm['schedule']
+        #if sched and not sheduleValid(sched):
+        #    smtpFrm['schedule'].note = NOT_VALID
+        #    valid = False
 
         ftpFrms = readFtps()
         for i in xrange(len(ftpFrms)):
@@ -332,7 +390,9 @@ class Delivery:
         if newFtpFrm:
             newFtpFrm.validates()
             types = getTypes(newFtpFrm, 'new_ftp')
-            if newFtpFrm['new_ftp_adr'].get_value():
+            # обрезать "ftp://" если есть
+            newFtpAdr = sub('ftp://', '', newFtpFrm['new_ftp_adr'].get_value())
+            if newFtpAdr:
                 if not types:
                     valid = False
                     newFtpFrm['new_ftp_adr'].note = NO_FILES_NOTE
@@ -375,17 +435,21 @@ class Delivery:
                 newFtpFrm, recFrms, newRecFrm, self.title)
         
         # запись изменений
-        # в MAILDELIVERY_PATH
-        with open(MAILDELIVERY_PATH, 'w') as conf:
-            smtp = ''
-            for n in ('smtp_server_adr', 'smtp_tls', 'smtp_acc', 'smtp_psw', 
-                'smtp_phone', 'smtp_sched'):
+        # в SSMTPCONF_PATH & REVALIASES_PATH
+        with open(SSMTPCONF_PATH, 'w+') as ssmtp:
+            for n in ('mailhub', 'UseTLS', 'AuthUser', 'AuthPass', 'phone',
+                    'schedule'):
                 v = smtpFrm[n].get_value()
-                if n == 'smtp_tls':
-                    smtp += 'TLS;'if v else ';'
-                else:
-                    smtp += v + ';'
+                if n == 'UseTLS':
+                    v = 'YES' if v else 'NO'
+                elif n == 'AuthUser':
+                    with open(REVALIASES_PATH, 'w+') as rev:
+                        rev.write('root:%s\n' % v)
+                ssmtp.write('%s=%s\n' % (n, v))
 
+        # в SMTPDELIVERY_PATH
+        with open(SMTPDELIVERY_PATH, 'w+') as conf:
+            smtp = ''
             for i in xrange(len(mailFrms)):
                 si = str(i)
                 if mailFrms[i][si + '_mail_del'].get_value():
@@ -401,7 +465,7 @@ class Delivery:
                     conf.write('%s%s;%s\n' % (smtp, adr, types))
 
         # в FTPDELIVERY_PATH
-        with open(FTPDELIVERY_PATH, 'w') as conf:
+        with open(FTPDELIVERY_PATH, 'w+') as conf:
             for i in xrange(len(ftpFrms)):
                 si = str(i)
                 if ftpFrms[i][si + '_ftp_del'].get_value():
@@ -416,18 +480,17 @@ class Delivery:
                     (adr, login, psw, types, phone, sched))
 
             if newFtpFrm:
-                adr = newFtpFrm['new_ftp_adr'].get_value()
-                if adr:
+                if newFtpAdr:
                     login = newFtpFrm['new_ftp_login'].get_value()
                     psw = newFtpFrm['new_ftp_psw'].get_value()
                     types = getTypes(newFtpFrm, 'new_ftp')
                     phone = newFtpFrm['new_ftp_phone'].get_value()
                     sched = newFtpFrm['new_ftp_sched'].get_value()
                     conf.write('%s;%s;%s;%s;%s;%s\n' %\
-                        (adr, login, psw, types, phone, sched))
+                        (newFtpAdr, login, psw, types, phone, sched))
 
         # в RECORDERDELIVERY_PATH
-        with open(RECORDERDELIVERY_PATH, 'w') as conf:
+        with open(RECORDERDELIVERY_PATH, 'w+') as conf:
             for i in xrange(len(recFrms)):
                 si = str(i)
                 if recFrms[i][si + '_recorder_del'].get_value():

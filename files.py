@@ -34,10 +34,15 @@ class Emergencys:
         entries = sorted(map(path.splitext, listdir(EMERGENCY_PATH)))
         cn = None
         files = []
+        print entries
         for n, e in entries:
             if cn != n:
                 cn = n
-                rec, pov, time = n.split('_')
+                try:
+                    rec, pov, time = n.split('_')
+                except:
+                    # неверный формат имени файла
+                    continue
                 files.append([rec, pov, time, [e,]])
             else:
                 files[-1][3].append(e)
