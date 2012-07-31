@@ -361,7 +361,6 @@ class Time:
         tzFrm = tzForm()
         modeFrm = modeForm()
         timeFrm = timeForm()
-        print timeForm['year'].args
         gpsFrm = gpsForm()
         ntpFrm = ntpForm()
         
@@ -372,7 +371,6 @@ class Time:
         ntpFrm.validates()
         
         mode = modeFrm[''].get_value()
-        print mode
 
         if mode == 'manually':
             if timeValid:

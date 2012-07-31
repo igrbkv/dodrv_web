@@ -10,6 +10,7 @@ CONFIG_XML = DEBUG_PATH + '/etc/dodrv/filters.conf'
 PASSWD_FILE_PATH = DEBUG_PATH + '/etc/dodrv/htpasswd'
 # очистка сессий при перезапуске
 SESSIONS_PATH = '/tmp/sessions'
+FILTERS = 'filters'
 
 MAX_USERS = 15
 
@@ -30,8 +31,9 @@ RECORDER_PATH = DEBUG_PATH + '/dodrv/recorder'
 PAGES_AROUND = 5
 
 #На время отладки
-web.config.debug = True
-cache = False
+if DEBUG_PATH:
+    web.config.debug = True
+    cache = False
 
 #Таймаут 1 час
 web.config.session_parameters['timeout'] = 60*60

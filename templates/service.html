@@ -1,0 +1,14 @@
+$def with (reboot, start, remove, upgrade, title=None)
+$var title: $title
+
+<form action="" enctype="multipart/form-data" method=POST>
+    <p>Перезапуск</p>
+    <p>$:reboot.render()</p>
+    <p>Запись файлов</p>
+    <p>$:start.render()</p>
+    <p>Удаление файлов аварий и самописцев</p>
+    <p>$:remove.render()</p>
+    <p>Обновление ПО</p>
+    <input type="file" name="myfile" />
+    <p>$:upgrade.render()</p>
+</form>

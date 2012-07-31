@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import web
-from config import render, POV_STAT, MAX_POV
+from config import render, POV_STAT, MAX_POV, DEBUG_PATH
 from subprocess import Popen, PIPE
 from datetime import datetime
+
 
 def _povsStatistic():
     try:
@@ -83,3 +84,20 @@ class System:
         sysState = self._sysState()
         povState = self._povState(first, _povsStatistic())
         return render.system(sysState, povState, self.title)
+ 
+VERSION_PATH = DEBUG_PATH + '/etc/dodrv/version'
+
+class Version:
+    '''
+    Вывод файла файла /etc/dodrv/version:
+    <номер_версии>, напр. 1.0.0
+    <год_выпуска>, напр. 2012
+    '''
+    title = 'Интерфейс регистратора ПАРМА РП4.06М'
+
+    def GET(self):
+        ver = []
+        with open(VERSION_PATH, 'r') as f:
+            ver = map(str.strip, f.readlines())
+
+        return render.version(ver, self.title)

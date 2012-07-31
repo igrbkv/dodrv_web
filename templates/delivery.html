@@ -1,0 +1,126 @@
+$def with (smtpFrm, mailFrms, newMailFrm, ftpFrms, newFtpFrm, recFrms, newRecFrm, title=None)
+$var title: $title
+
+$def showMailHeader():
+    <tr>
+    <th rowspan="2">Удл.</th>
+    <th rowspan="2">Адрес</th>
+    <th colspan="4">Файлы</th>
+    <th rowspan="2" id="err"></th>
+    </tr>
+    <tr>
+    <th>Пуски</th>
+    <th>События</th>
+    <th>Самописцы</th>
+    <th>Журнал</th>
+    </tr>
+    
+$def showFtpHeader():
+    <tr>
+    <th rowspan="2">Удл.</th>
+    <th rowspan="2">Адрес[:порт]</th>
+    <th rowspan="2">Логин</th>
+    <th rowspan="2">Пароль</th>
+    <th colspan="4">Файлы</th>
+    <th rowspan="2">Телефон</th>
+    <th rowspan="2">Расписание</th>
+    <th rowspan="2" id="err"></th>
+    </tr>
+    <tr>
+    <th>Пуски</th>
+    <th>События</th>
+    <th>Самописцы</th>
+    <th>Журнал</th>
+    </tr>
+
+$def showRecorderHeader():
+    <tr>
+    <th rowspan="2">Удл.</th>
+    <th rowspan="2">Адрес</th>
+    <th colspan="4">Файлы</th>
+    <th rowspan="2" id="err"></th>
+    </tr>
+    <tr>
+    <th>Пуски</th>
+    <th>События</th>
+    <th>Самописцы</th>
+    <th>Журнал</th>
+    </tr>
+
+<form action="/config/delivery" method=POST>
+<h3>Почта</h3>
+$:smtpFrm.render()
+<table>
+    $:showMailHeader()
+    $for f in mailFrms:
+        <tr>
+        $ note = None
+        $for m in f.inputs:
+            $if m.is_hidden():
+                <td>$m.value</td>
+            $else:
+                <td>$:m.render()</td>
+            $ note = note or m.note
+        <td><strong class="wrong">$note</strong></td>
+        </tr>
+    <tr>
+    <td></td>
+    $ note = None
+    $for m in newMailFrm.inputs:
+        <td>$:m.render()</td>
+        $ note = note or m.note
+    <td><strong class="wrong">$note</strong></td>
+    </tr>
+</table>
+
+<h3>FTP-сервер</h3>
+<table>
+    $:showFtpHeader()
+    $for ff in ftpFrms:
+        <tr>
+        $ note = None
+        $for f in ff.inputs:
+            $if f.is_hidden():
+                <td>$f.value</td>
+            $else:
+                <td>$:f.render()</td>
+            $ note = note or f.note
+        <td><strong class="wrong">$note</strong></td>
+        </tr>
+    <tr>
+    <td></td>
+    $ note = None
+    $for f in newFtpFrm.inputs:
+        <td>$:f.render()</td>
+        $ note = note or f.note
+    <td><strong class="wrong">$note</strong></td>
+    </tr>
+</table>
+
+<h3>Регистратор</h3>
+<table>
+    $:showRecorderHeader()
+    $for f in recFrms:
+        <tr>
+        $ note = None
+        $for r in f.inputs:
+            $if r.is_hidden():
+                <td>$r.get_value()</td>
+            $else:
+                <td>$:r.render()</td>
+            $ note = note or r.note
+        <td><strong class="wrong">$note</strong></td>
+        </tr>
+    <tr>
+    <td></td>
+    $ note = None
+    $for r in newRecFrm.inputs:
+        <td>$:r.render()</td>
+        $ note = note or r.note
+    <td><strong class="wrong">$note</strong></td>
+    </tr>
+
+</table>
+
+<p><button type="submit" id="Применить" name="Применить">Применить</button></p>
+</form>

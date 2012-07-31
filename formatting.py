@@ -3,6 +3,7 @@
 
 import config
 import menu
+import session 
 
 """
 class ctx():
@@ -27,7 +28,10 @@ def isCurPath(path):
 def getMenu():
     if config.web.ctx.path == '/login': 
         return menu.loginMenu
-    return menu.mainMenu 
+    if session.getUser() == 'admin':
+        return menu.mainMenu 
+    else:
+        return menu.userMenu
 
 def attrs(d):
     s = ''

@@ -13,6 +13,7 @@ import session
 import syslog
 from os import listdir
 from htpasswd import htpasswd
+from http import nocache
 
 
 def online(login):
@@ -69,12 +70,12 @@ class Logout:
 changePasswordForm = form.Form(
     form.Password('oldPsw', 
         form.Validator('* Неверный пароль', 
-            lambda i: i == readPassword(session.getUser())), 
+            lambda i: htpasswd.userValid(session.getUser(), i)), 
         description = 'Старый пароль', rows = '5'),
     form.Password('newPsw', description = 'Новый пароль'),
     form.Password('secPsw', 
         description = 'Повтор пароля'),
-    form.Button('Запомнить', type = 'submit'),
+    form.Button('Save', type = 'submit', html = u'Запомнить'),
     validators = [form.Validator('Пароль повторен неверно', lambda i: i.newPsw == i.secPsw)], 
 )
 
@@ -89,7 +90,10 @@ class Password:
         cpf = changePasswordForm()
         cpf.validates()
         if cpf.valid:
-            writePassword(cpf.newPsw.value)
+            un = session.getUser()
+            uv = htpasswd.users[un]
+            htpasswd.users[un] = (cpf.newPsw.value, uv[1], uv[2])
+            htpasswd.save()
             return render.completion(self.title, 'Новый пароль сохранен')
         else:
             cpf.oldPsw.value = ''
@@ -98,7 +102,8 @@ class Password:
             return render.form(cpf, self.title)
 
     def GET(self):
-        web.header('Content-Type', 'text/html; charset= utf-8')
+        nocache()
+        
         cpf = changePasswordForm()
         return render.form(cpf, self.title)
 

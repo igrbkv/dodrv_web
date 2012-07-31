@@ -168,4 +168,6 @@ def sync_mode():
             return 'gps'
         return 'ntp'
     return 'manually'
- 
+
+
+

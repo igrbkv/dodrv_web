@@ -11,7 +11,7 @@ def authProcessor(handle):
     print usr, path
     if not usr and path != '/login':
         raise web.seeother('/login')
-    elif usr != 'admin' and path.startswith('/config'):
+    elif usr != 'admin' and path.startswith('/config') and path != '/config/password':
         raise web.seeother('/noaccess')
     else:    
         return handle()

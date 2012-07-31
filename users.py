@@ -30,7 +30,7 @@ def createUsers():
     d = {}
     for k, v in htpasswd.users.iteritems():
         if k != 'admin':
-            d[k] = createUserForm(k, v[0], v[1])
+            d[k] = createUserForm(k, v[0], v[2])
     return d
 
 newUserForm = form.Form(
@@ -86,13 +86,13 @@ class Users:
             # запись изменений    
             psw = f[k + '_psw'].get_value()
             info = f[k + '_info'].get_value()
-            if htpasswd.users[k] != (psw, info):
-                htpasswd.users[k] = (psw, info)
+            if htpasswd.users[k] != (psw, '', info):
+                htpasswd.users[k] = (psw, '', info)
                 save = True
         if newUser:
             nu = newUser['new_user'].get_value()
             if nu:
-                htpasswd.users[nu] = (newUser['psw_new_user'].get_value(), newUser['info_new_user'].get_value())
+                htpasswd.users[nu] = (newUser['psw_new_user'].get_value(), '', newUser['info_new_user'].get_value())
                 save = True
 
         if save:
