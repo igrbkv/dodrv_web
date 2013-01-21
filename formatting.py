@@ -47,14 +47,19 @@ def getDiscrete(dev, i):
     return config.xml['device'][dev]['discrete'][str(i)]
 
 def getDevs():
-    devs = (str(i) for i in xrange(len(config.xml['device'])) 
-        if config.xml['device'][str(i)]['exists']) 
+    devs = (str(i) for i in xrange(config.MAX_POV) 
+        if config.xml['device'].has_key(str(i)) and 
+            config.xml['device'][str(i)]['exists'] and 
+            config.xml['device'][str(i)]['in_use'] == 'yes') 
     return devs
 
 def getFirstDev():
-    for i in xrange(len(config.xml['device'])):
-        if config.xml['device'][str(i)]["exists"]:
-            return str(i)
+    for i in xrange(config.MAX_POV):
+        ii = str(i)
+        if config.xml['device'].has_key(ii) and \
+                config.xml['device'][ii]["exists"] and \
+                config.xml['device'][ii]['in_use'] == 'yes':
+            return ii
     return ''
 
 def getPages(page, pages):
@@ -69,7 +74,8 @@ def getPages(page, pages):
     if not pages:
         return lst
 
-    l = [i for i in xrange(page-config.PAGES_AROUND, page+config.PAGES_AROUND+1) if i > 0 and i <= pages]
+    l = [i for i in xrange(page-config.PAGES_AROUND, 
+        page+config.PAGES_AROUND+1) if i > 0 and i <= pages]
 
     if l[0] != 1:
         lst.append('1')

@@ -37,10 +37,10 @@ def restart_service(name):
     '''
     path = '/etc/init.d/' + name
     try:
-        check_call(['path', 'restart'])
+        check_call([path, 'restart'])
         syslog.syslog('Сервис ' + name + ' перезапущен')
     except:
-        syslog.syslog('Ошибка перезапуска сервиса ' + name)
+        syslog.syslog('Ошибка перезапуска сервиса %s' % name)
 
 def add_service(name, level = 'default', start = True):
     '''
@@ -77,20 +77,6 @@ def del_service(name, level = 'default', stop = True):
         syslog.syslog('Ошибка %s сервиса %s' % 
                 ('останова' if state == 0 else 'удаления', name))
 
-
-def restartFilters(which=''):
-    if which:
-        suf = 'фильтра pov' + which.encode('utf-8')
-        which = '.pov' + which
-    else:
-        suf = 'фильтров'
-
-    try:
-        p = Popen('/etc/init.d/dofilters%s restart' % which, shell=False)
-        waitpid(p.pid, 0)
-        syslog.syslog('Перезапуск ' + suf)
-    except:
-        syslog.syslog('Ошибка перезапуска ' + suf)
 
 def readShmem(dev):
     '''

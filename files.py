@@ -6,8 +6,6 @@ from config import render, xml, EMERGENCY_PATH, RECORDER_PATH, FILES_IN_PAGE
 from http import nocache
 from os import listdir, path
 
-COMTRADE_EXTENTIONS=['.CFG','.DAT', '.INFO', '.OMP']
-
 class Emergencys:
     title = 'Файлы аварий'
 
@@ -23,7 +21,7 @@ class Emergencys:
         ]
         Например:
         [
-         ['1', '0', '120119190000100', ['.CFG', '.DAT', '.INFO'])
+         ['1', '0', '120119190000100', ['.cfg', '.dat', '.inf'])
         ]
 
         '''
@@ -34,20 +32,20 @@ class Emergencys:
         entries = sorted(map(path.splitext, listdir(EMERGENCY_PATH)))
         cn = None
         files = []
-        print entries
         for n, e in entries:
-            if cn != n:
-                cn = n
-                try:
-                    rec, pov, time = n.split('_')
-                except:
-                    # неверный формат имени файла
-                    continue
-                files.append([rec, pov, time, [e,]])
-            else:
-                files[-1][3].append(e)
+            if e in ['.cfg', '.dat', '.inf']:
+                if cn != n:
+                    cn = n
+                    try:
+                        rec, pov, time = n.split('_')
+                    except:
+                        # неверный формат имени файла
+                        continue
+                    files.append([rec, pov, time, [e,]])
+                else:
+                    files[-1][3].append(e)
         del entries
-        pages= len(files)/FILES_IN_PAGE+1
+        pages = len(files)/FILES_IN_PAGE+1
         files.sort(key = lambda f: f[2])
         # выбор файлов текущей страницы
         files = files[(page-1)*FILES_IN_PAGE: min(len(files), page*FILES_IN_PAGE-1)] 
@@ -59,7 +57,7 @@ class Recorders:
     def GET(self, page='1'):
         '''
         Считывает все файлы из папки RECORDER_PATH
-        <recorder id>_<pov id>_yymmdd(hhmmss-hhmmss).[CFG|DAT|INFO|OMP]
+        <recorder id>_<pov id>_yymmdd(hhmmss-hhmmss).[CFG|DAT]
         Сортирует по времени и формирует список файлов текущей страницы 
         (размера не более FILES_IN_PAGE) след. вида:
         [
@@ -81,16 +79,19 @@ class Recorders:
         cn = None
         files = []
         for n, e in entries:
-            if cn != n:
-                cn = n
-                rec, pov, time = n.split('_')
-                yymmddhhmmss1 = time[:6] + time[7:13]
-                yymmddhhmmss2 = time[:6] + time[14:20]
-                files.append([rec, pov, yymmddhhmmss1, yymmddhhmmss2, [e,]])
-            else:
-                files[-1][4].append(e)
+            if e in ['.cfg', '.dat']:
+                if cn != n:
+                    cn = n
+                    rec, pov, time = n.split('_')
+                    time = time.replace('(', '');
+                    time = time.replace(')', '');
+                    beg, end = time.split('-')
+                    end = beg[:len(beg)-len(end)]+end
+                    files.append([rec, pov, beg, end, [e,]])
+                else:
+                    files[-1][4].append(e)
         del entries
-        pages= len(files)/FILES_IN_PAGE+1
+        pages = len(files)/FILES_IN_PAGE+1
         files.sort(key = lambda f: f[2])
         # выбор файлов текущей страницы
         files = files[(page-1)*FILES_IN_PAGE: min(len(files), page*FILES_IN_PAGE-1)] 

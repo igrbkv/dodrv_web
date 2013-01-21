@@ -2,9 +2,13 @@
 
 import web
 from web import form
-from config import render, xml, xmlRender, rewriteConfigXml
+from config import render, xml, xmlRender, rewriteConfigXml, MAX_POV, DEBUG_PATH
 from os import path
-from utils import restartFilters
+from utils import restart_service
+from http import nocache
+from subprocess import call
+
+HOSTNAME_PATH=DEBUG_PATH + '/etc/conf.d/hostname'
 
 signals = [u'16 аналогов 32 дискрета', u'128 дискрет']
 comtradeFormats = ['COMTRADE ASCII', 'COMTRADE BIN']
@@ -26,11 +30,12 @@ recorderForm = form.Form(
 
 def createPovForms():
     pf = {}
-    for i in xrange(len(xml['device'])):
-        if xml['device'][str(i)]['exists']:
+    for i in xrange(MAX_POV):
+        if xml['device'].has_key(str(i)) and xml['device'][str(i)]['exists']:
             p = form.Form(
-                form.Checkbox('pov%s' % i, value = '%s' %i, description = 'Канал %s' % i),
-                form.Dropdown('signals%s' % i, signals, description = ''))
+                form.Checkbox('pov%d' % i, value = '%d' % i, 
+                    description = 'Канал %d' % i),
+                form.Dropdown('signals%d' % i, signals, description = ''))
             pf[i] = p
     return pf
 
@@ -105,10 +110,7 @@ class Recorder:
 
 
     def GET(self):
-        web.header('Content-Type', 'text/html; charset= utf-8')
-        web.header('Cache-Control', 'no-store, no-cache, must-revalidate')
-        web.header('Cache-Control', 'post-check=0, pre-check=0', False)
-        web.header('Pragma', 'no-cache')
+        nocache()
         
         rf = recorderForm()
         for k in ('id', 'station_name', 'name'):
@@ -116,11 +118,11 @@ class Recorder:
         
         pfs = povForms
         for i in pfs.keys():
-            getattr(pfs[i], 'pov%s' % i).set_value(xml['device'][str(i)]['in_use'] == "yes")
+            getattr(pfs[i], 'pov%d' % i).set_value(xml['device'][str(i)]['in_use'] == "yes")
             si = 0
             if xml['device'][str(i)]['discretes'] == '128': 
                 si = 1
-            getattr(pfs[i], 'signals%s' % i).value = signals[si]
+            getattr(pfs[i], 'signals%d' % i).value = signals[si]
         
         ef = emergencyForm()
         par = 'emergency'
@@ -153,8 +155,8 @@ class Recorder:
         ff = formatForm()
         
         valid &= rf.validates()
-        for p in pfs:
-            p.validates()
+        for i in pfs.keys():
+            pfs[i].validates()
         valid &= ef.validates() 
         valid &= sf.validates() 
         valid &= ff.validates()
@@ -167,12 +169,12 @@ class Recorder:
         
         for i in pfs.keys():
             inUse = 'yes'
-            if not getattr(pfs[i], 'pov%s' % i).get_value():
+            if not getattr(pfs[i], 'pov%d' % i).get_value():
                 inUse = 'no'
             xml['device'][str(i)]['in_use'] = inUse
 
             a, d = '0', '128'
-            if getattr(pfs[i], 'signals%s' % i).value == signals[0]:
+            if getattr(pfs[i], 'signals%d' % i).value == signals[0]:
                 a, d = '16', '32'
             setDevSigNum(str(i), a, d)
         
@@ -191,9 +193,15 @@ class Recorder:
         if ff.format.value == comtradeFormats[0]:
             f = 'ASCII'
         xml['data_formats']['comtrade']['data_file'] = f
-        
+       
+        with open(HOSTNAME_PATH, 'w') as hf:
+            hn='r%s' % xml['id']
+            hf.write('HOSTNAME="%s"\n' % hn)
+        call(['hostname', hn])
         rewriteConfigXml()
-        restartFilters()
+        for k in xml['device'].iterkeys():
+            # str(k) necessarily
+            restart_service('dofilters.pov'+ str(k))
         
         return render.completion(self.title, 'Данные записаны')
 

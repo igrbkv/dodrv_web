@@ -63,7 +63,6 @@ class AState:
         угол фазы = угол певого вектора
         '''
         ang = angle(fft.fft(values), deg)[1]
-        print ang
         ang -= self.skews[idx][deg]
         if ang < 0.:
             ang += 360. if deg else 2.*pi 

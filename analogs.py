@@ -3,7 +3,7 @@
 import web
 from web import form
 from config import render, xml, xmlRender, rewriteConfigXml
-from utils import restartFilters
+from utils import restart_service
 from formatting import getFirstDev
 
 def createAnalogsForm(dev):
@@ -40,5 +40,5 @@ class Analogs:
             xml['device'][dev]['analog'][str(cb.value)]['in_use'] = inUse
         
         rewriteConfigXml()
-        restartFilters(dev)
+        restart_service('dofilters.pov' + str(dev))
         return render.completion(title)

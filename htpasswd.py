@@ -28,10 +28,11 @@ class Htpasswd:
                 lst = f.readlines()
             for l in lst:
                 l = l.strip().split(':')
-                info = ''
-                for w in l[3:]:
-                    info += w
-                self.users[l[0]] = (l[1], l[2], info)
+                if l[0]:
+                    info = ''
+                    for w in l[3:]:
+                        info += w
+                    self.users[l[0]] = (l[1], l[2], info)
         except IOError:
             pass
 

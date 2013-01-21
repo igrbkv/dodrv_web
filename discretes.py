@@ -3,7 +3,7 @@
 import web
 from web import form
 from config import render, xml, rewriteConfigXml 
-from utils import restartFilters
+from utils import restart_service
 from formatting import getFirstDev
 
 def createDiscretesForm(dev):
@@ -44,6 +44,6 @@ class Discretes:
             xml['device'][dev]['discrete'][str(cb.value)]['in_use'] = inUse
         
         rewriteConfigXml()
-        restartFilters(dev)
+        restart_service('dofilters.pov%s' % str(dev))
 
         return render.completion(title)

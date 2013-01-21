@@ -4,7 +4,7 @@ import web
 from web import form
 from config import render, xml, xmlRender, rewriteConfigXml
 import math
-from utils import restartFilters
+from utils import restart_service
 
 MIN_INTEGRATION_INTERVAL_MS = 10
 MAX_INTEGRATION_INTERVAL_MS = 100
@@ -297,6 +297,6 @@ class Analog:
         xml['device'][dev]['analog'][idx] = self.a
         
         rewriteConfigXml()
-        restartFilters(dev)
+        restart_service('dofilters.pov' + str(dev))
 
         return render.completion(self.title)

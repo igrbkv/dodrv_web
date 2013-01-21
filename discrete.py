@@ -3,7 +3,7 @@
 import web
 from web import form
 from config import render, xml, rewriteConfigXml
-from utils import restartFilters
+from utils import restart_service
 
 MAX_PULSE_DURATION_MS = 20
 
@@ -80,6 +80,6 @@ class Discrete:
         xml['device'][dev]['discrete'][idx] = d
         
         rewriteConfigXml()
-        restartFilters(dev)
+        restart_service('dofilters.pov' + str(dev))
         
         return render.completion(self.title)

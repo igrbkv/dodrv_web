@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import web
-from config import render, POV_STAT, MAX_POV, DEBUG_PATH
+from config import render, xml, POV_STAT, MAX_POV, DEBUG_PATH
 from subprocess import Popen, PIPE
 from datetime import datetime
 
@@ -61,12 +61,13 @@ class System:
         ps = []
         for i in map(str, xrange(MAX_POV)):
             if i in first.keys():
-                if first[i]['bytes_read'] != second[i]['bytes_read']:
-                    state = 1
-                elif first[i]['read_counter'] == second[i]['read_counter']:
-                    state = 0
+                if xml['device'][i]['in_use'] == "yes":
+                    if first[i]['bytes_read'] != second[i]['bytes_read']:
+                        state = 1
+                    else: 
+                        state = -1
                 else:
-                    state = -1
+                    state = 0
                 ps.append((i, state))
         return ps
 
