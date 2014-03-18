@@ -196,7 +196,7 @@ class Analog:
                             topBound *= ADC_MULTIPLICATOR*float(xml['ADCs'][aI['ADC']]['coef2'])*float(aI['coef1'])/2
 
                         if topBound  < float(top):
-                            frm[top].note = THRESHOLD_TOO_BIG_NOTE % topBound
+                            frm[pref_ + 'top_threshold'].note = THRESHOLD_TOO_BIG_NOTE % topBound
                             valid = False
                 else:
                     frm[pref_ + par].note = THRESHOLDS_EMPTY_NOTE
@@ -205,6 +205,7 @@ class Analog:
             par = 'analog_self-recorder'
             if par in handlers and not self.a[pref][par]['analog_delta_percent']:
                 frm[pref_ + 'analog_delta_percent'].note = EMPTY_VALUE_NOTE
+                valid = False
 
         return frm, valid
 
@@ -291,7 +292,7 @@ class Analog:
         harmonicFrm, harmonicValid = self._commonCheck('harmonic', harmonicFrm)
         activeFrm, activeValid = self._commonCheck('active_power', activeFrm, dev)
         reactiveFrm, reactiveValid = self._commonCheck('reactive_power', reactiveFrm, dev)
-        if not (rmsValid and zeroValid and positiveValid and negativeValid and harmonicValid and activeFrm and reactiveFrm):
+        if not (rmsValid and zeroValid and positiveValid and negativeValid and harmonicValid and activeValid and reactiveValid):
             return render.analog(analogFrm, rmsFrm, zeroFrm, positiveFrm, negativeFrm, harmonicFrm, activeFrm, reactiveFrm, title = self.title)
         
         xml['device'][dev]['analog'][idx] = self.a

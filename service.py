@@ -19,6 +19,7 @@ http://webpy.org/cookbook/fileupload
 4. Обновление ПО
 [x] Сохранить файлы конфигурации
 Файл дистрибутива[           ] [Выбрать]
+Файл контрольной суммы[           ] [Выбрать]
 [Выполнить]
 
 
@@ -27,11 +28,8 @@ http://webpy.org/cookbook/fileupload
 Файл дистрибутива 
 
 etc/dodrv/version - файл с версией dodrv следующего формата:
-    Интерфейс регистратора ПАРМА РП4.06М
-    Версия 1.0.0
-    Год 2012
-    www.parma.spb.ru 
-    parma@parma.spb.ru
+1.0.0
+2012
 
 Выводится во вкладке "О программе"
 
@@ -41,7 +39,7 @@ etc/dodrv/version - файл с версией dodrv следующего фор
 
 import web
 from web import form
-from config import render, EMERGENCY_PATH, RECORDER_PATH, DEBUG_PATH, FILTERS
+from config import xml, render, EMERGENCY_PATH, RECORDER_PATH, DEBUG_PATH, FILTERS
 from http import nocache
 from subprocess import Popen, PIPE, call
 from syslog import syslog
@@ -50,13 +48,15 @@ import os
 import shutil
 import ctypes
 from signal import SIGUSR1
+from calendar import timegm
 
 title = 'Сервис'
 
-UPLOAD_PATH = DEBUG_PATH + '/dodrv.gz'
-NOTE_NO_FILE = u'Файл не задан'
+MD5SUMS_UPLOAD_PATH = DEBUG_PATH + '/md5sums'
+
+NOTE_NO_FILE = 'Файл не задан'
+NOTE_ERROR_UPLOAD = 'Ошибка приема файла'
 LOG_REBOOT = 'Перезапуск по команде администратора'
-MAX_TIME_DELTA = 60*60  # 1 час
 
 rebootForm = form.Form(
     form.Button('form_action', value = 'reboot', type = 'submit', 
@@ -71,7 +71,14 @@ removeForm = form.Form(
     form.Button('form_action', value = 'remove', type = 'submit', 
         html = u'Выполнить'))
 
+class UploadFile(form.Input):
+    def get_type(self):
+        return 'file'
+
 upgradeForm = form.Form(
+    UploadFile('dist', description = 'Файл дистрибутива'),
+    #UploadFile('md5sums', description = 'Файл с контрольной суммой'),
+    form.Checkbox('save_config', value = 'value', description = 'Сохранить конфигурацию'),
     form.Button('form_action', value = 'upgrade', type = 'submit', 
         html = u'Выполнить'))
 
@@ -107,17 +114,17 @@ def start(sec=0):
         sigqueue(int(pid), SIGUSR1, duration)
 
 
-def remove_path(ct, path):
+def remove_path(path, delta):
     '''
     return <число удаленных файлов>
     '''
     n = 0
+    ct = timegm(time.gmtime())
     for f in [f for f in os.listdir(path) if not f in [".",".."]]:
         fp = path + '/' + f
         fi = os.stat(fp)
-        ft = time.localtime(fi.st_mtime)
-        dt = ct - ft
-        if dt.seconds > MAX_TIME_DELTA:
+        dt = ct - fi.st_mtime
+        if (ct - fi.st_mtime) > delta:
             try:
                 os.remove(fp)
                 syslog('Удален файл:' + fp)
@@ -133,13 +140,18 @@ def remove():
 
     '''
     syslog('Очистка диска')
-    ct = time.localtime()
-    n = remove_path(ct, EMERGENCY_PATH)
-    n += remove_path(ct, RECORDER_PATH)
+    sec = int(xml["emergency"]["max_file_length_s"])
+    n = remove_path(EMERGENCY_PATH, sec)
+    sec = int(xml["self-recorder"]["max_file_length_hour"])*60*60
+    n += remove_path(RECORDER_PATH, sec)
     return n
 
-def upgrade():
-    pass
+def upgrade(save_config):
+    if save_config:
+        call(['sysupgrade.sh', '1'])
+    else:
+        call(['sysupgrade.sh'])
+
 
 class Service:
     i = None
@@ -150,21 +162,10 @@ class Service:
         return render.service(rebootForm(), startForm(), 
             removeForm(), upgradeForm(), title = title)
 
-    def upload(self):
-        # Из windows-пути взять имя файла
-        # filepath = self.i.myfile.fname.replace('\\','/')
-        # filename = filepath.split('/')[-1]
-        try:
-            target = file(UPLOAD_PATH, "wb")
-            shutil.copyfileobj(self.i.myfile.file, target)
-            target.close()
-        except:
-            return False
-        return True
-
 
     def POST(self):
-        self.i = web.input(myfile={})
+        # self.i = web.input(dist={}, md5sums={})
+        self.i = web.input(dist={})
         if self.i.form_action == 'reboot':
             reboot()
         elif self.i.form_action == 'start':
@@ -172,17 +173,24 @@ class Service:
         elif self.i.form_action == 'remove':
             remove()
         else:
-            if 'myfile' in self.i:
-                if self.i.myfile.filename:
-                    if self.upload():
-                        upgrade() 
-                    else:
-                        raise web.seeother('config/service')
-
-                else:
-                    upgradeFrm = upgradeForm()
-                    upgradeFrm.note = NOTE_NO_FILE
-                    return render.service(rebootForm(), startForm(), 
-            removeForm(), upgradeFrm, title = title)
+            upgradeFrm = upgradeForm()
+            upgradeFrm.validates()
+            if ('dist' in self.i) and upgradeFrm['dist'].get_value() and\
+                    upgradeFrm['dist'].get_value().strip():
+                filepath = self.i.dist.filename.replace('\\','/')
+                filename = '%s/%s' % (DEBUG_PATH, filepath.split('/')[-1])
+                distr = open(filename,'w')
+                shutil.copyfileobj(self.i.dist.file, distr)
+                distr.close()
+                #if ('md5sums' in self.i) and upgradeFrm['md5sums'].get_value()\
+                #        and upgradeFrm['md5sums'].get_value().strip():
+                #    sums = open(MD5SUMS_UPLOAD_PATH,'w')
+                #    shutil.copyfileobj(self.i.md5sums.file, sums)
+                #    sums.close()
+                upgrade(upgradeFrm['save_config'].get_value())
+            else:
+                upgradeFrm['dist'].note = NOTE_NO_FILE
+                return render.service(rebootForm(), startForm(), 
+                    removeForm(), upgradeFrm, title = title)
 
         return render.completion(title, text='Команда выполнена')

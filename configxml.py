@@ -7,9 +7,9 @@
 в параметре exists.
 Минимальный файл конфигурации:
 <?xml version="1.0" encoding="UTF-8"?>
-<recorder id="0" station_name="П/с Долгоозерная" type="ПАРМА РП4.06" name="Регистратор 0" version="0.0">
+<recorder id="0" station_name="П/с Долгоозерная" type="ПАРМА РП4.06" version="0.0">
     <ADCs>
-        <ADC unit="V" coef2="0.0196" name="OV-0.2"/>
+        <ADC unit="V" coef2="0.0196" name="OV-0.2" checkout_AC="0.14" checkout_DC="0.2" checkout_Z="0.2" checkout_PE="3"/>
         ...
     </ADCs>
     <devices>
@@ -41,6 +41,8 @@
 """
 import xml.sax
 from os import path
+from config import DEBUG_PATH
+import syslog
 
 __all__ = ['configXml', 'saveConfigXml']
 
@@ -48,6 +50,7 @@ __all__ = ['configXml', 'saveConfigXml']
 ADCCOEF = 10./(1<<12)
 DEFAULT_SAMPLE_RATE = 1800
 SEP = '/'
+DEV_PATH = DEBUG_PATH + '/dev/pov%s'
 
 class ConfigParser(xml.sax.ContentHandler):
     state = 'parse' #'skip_analogs', 'skip_discretes', 'skip_analog', 'skip_filter'
@@ -67,11 +70,10 @@ class ConfigParser(xml.sax.ContentHandler):
         try:
             parser.parse(fileName)
         except IOError, e:
-            #FIXME вывод в лог
-            print 'Ошибка (%i) при открытии файла %s' % (e.errno, e.filename)
+            syslog.syslog('Ошибка (%i) при открытии файла %s' % (e.errno, e.filename))
             raise
         except:
-            print 'Ошибка разбора файла конфигурации', fileName
+            syslog.syslog('Ошибка разбора файла конфигурации', fileName)
             raise
     
     def _getObj(self, attr, al):
@@ -87,13 +89,13 @@ class ConfigParser(xml.sax.ContentHandler):
             return
 
         if tag == 'recorder':
-            r = self._getObj(attr, ('id', 'station_name', 'name', 'type', 'version'))
+            r = self._getObj(attr, ('id', 'station_name', 'type', 'version'))
             r['ADCs'] = {}
             r['device'] = {}
             self.recorder = r
         
         elif tag == 'ADC':
-            self.recorder['ADCs'][attr.get('name')] = self._getObj(attr, ('coef2', 'unit'))
+            self.recorder['ADCs'][attr.get('name')] = self._getObj(attr, ('coef2', 'unit', 'checkout_AC', 'checkout_DC', 'checkout_Z', 'checkout_PE'))
 
         elif tag == 'device':
             d = self._getObj(attr, ('in_use', 'analogs', 'discretes', 'sample_rate', 'frequency', 'skew'))
@@ -101,7 +103,7 @@ class ConfigParser(xml.sax.ContentHandler):
             d['discrete'] = {}
             # отсутствующие каналы pov не удаляются, а только помечаются 
             # дополнительным параметром exists.
-            d['exists'] = path.exists('/dev/pov%s' % attr.get('id'))
+            d['exists'] = path.exists(DEV_PATH % attr.get('id'))
             self.recorder['device'][attr.get('id')] = d
             self.curDevice = attr.get('id')
 

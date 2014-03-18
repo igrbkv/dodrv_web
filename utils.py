@@ -3,10 +3,11 @@
 import types
 from shutil import copy, move
 from subprocess import Popen, check_call, CalledProcessError, PIPE
-from os import waitpid, close, tmpnam, rename
+from os import waitpid, close, tmpnam, rename, read, lseek, write
+import struct
 import syslog
-import mmap 
-import posix_ipc 
+import mmap
+import posix_ipc
 from decimal import getcontext, Decimal
 
 def getAllFunctions(module):
@@ -23,7 +24,10 @@ def rewrite(filePath, str):
         tmp.flush()
         tmp.close()
 
-        copy(filePath, filePath + '~')
+        try:
+            copy(filePath, filePath + '~')
+        except:
+            pass
         move(filePath + '.tmp', filePath)
     finally:
         return False
@@ -109,6 +113,27 @@ def readShmem(dev):
 
     return lines
 
+def recorderMode(value=''):
+    '''
+    @param value если задан, записывается в /dev/shm/recorder_mode
+    @return предыдущее значение /dev/shm/recorder_mode
+    '''
+    fmt = '=i'
+    name = '/recorder_mode'
+    mem = posix_ipc.SharedMemory(name)
+    sem = posix_ipc.Semaphore(name)
+    # антиблокиратор на всякий случай 
+    sem.acquire(1.0)
+    buf = read(mem.fd, struct.calcsize(fmt))
+    mode = struct.unpack(fmt, buf)
+    if value:
+        lseek(mem.fd, 0, 0)
+        write(mem.fd, struct.pack(fmt, value))
+    sem.release()
+    close(mem.fd)
+    sem.close()
+    return mode
+
 
 prefixes = [('', ''), ('k', 'к'), ('M', 'М'), ('G', 'Г'), ('T', 'Т'), ('P', 'П'), ('E', 'З'), ('f', 'ф'), ('n', 'н'), ('u', 'мк'), ('m', 'м')]
 
@@ -139,14 +164,12 @@ def spark_string(ints):
     ss = u''.join(ticks[int(round(i / step))] for i in ints)
     return ss.encode('utf-8')
 
-def rewrite(fpath, lines):
+def rewrite2(fpath, lines):
     '''
     Перезаписывает файл fpath содержимым lines 
     '''
-    tpath = tmpnam()
-    with open(tpath, 'w') as mc:
+    with open(fpath, 'w') as mc:
         mc.writelines(lines)
-    rename(tpath, fpath)
 
 def sync_mode():
     '''

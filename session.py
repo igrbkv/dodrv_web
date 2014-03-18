@@ -8,11 +8,13 @@ def authProcessor(handle):
     """Проверка авторизирован ли пользователь"""
     path = web.ctx.path
     usr = getUser()
-    print usr, path
+    #print usr, path
     if not usr and path != '/login':
         raise web.seeother('/login')
     elif usr != 'admin' and path.startswith('/config') and path != '/config/password':
         raise web.seeother('/noaccess')
+    elif usr and path == '/':
+        raise web.seeother('/state/system') 
     else:    
         return handle()
 

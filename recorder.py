@@ -18,14 +18,13 @@ notes = (
     '* Должно быть число от 0.0 до 100.0')
 
 recorderForm = form.Form(
+    form.Textbox('station_name', description = 'Энергообъект'),
     form.Textbox(
         'id', 
         form.Validator(notes[0], bool),
         form.regexp('\d+', notes[0]),
         form.Validator(notes[0], lambda i: int(i) >= 0 and int(i) < 100),
         description = 'Идентификатор'),
-    form.Textbox('name', description = 'Имя регистратора'),
-    form.Textbox('station_name', description = 'Энергообъект'),
     form.Dropdown('type', [xml['type'],], description = 'Тип'))
 
 def createPovForms():
@@ -113,7 +112,7 @@ class Recorder:
         nocache()
         
         rf = recorderForm()
-        for k in ('id', 'station_name', 'name'):
+        for k in ('id', 'station_name'):
             rf[k].value = xml[k] 
         
         pfs = povForms
@@ -164,7 +163,7 @@ class Recorder:
         if not valid:
             return render.recorder(rf, pfs, ef, sf, ff, self.title)
         #Запись парметров
-        for k in ('id', 'station_name', 'name'):
+        for k in ('id', 'station_name'):
             xml[k] = rf[k].value
         
         for i in pfs.keys():

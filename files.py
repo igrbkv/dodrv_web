@@ -45,10 +45,10 @@ class Emergencys:
                 else:
                     files[-1][3].append(e)
         del entries
-        pages = len(files)/FILES_IN_PAGE+1
+        pages = (len(files)+FILES_IN_PAGE-1)/FILES_IN_PAGE
         files.sort(key = lambda f: f[2])
         # выбор файлов текущей страницы
-        files = files[(page-1)*FILES_IN_PAGE: min(len(files), page*FILES_IN_PAGE-1)] 
+        files = files[(page-1)*FILES_IN_PAGE: min(len(files), page*FILES_IN_PAGE)] 
         return render.emgfiles(page, pages, files, title = self.title)
 
 class Recorders:
@@ -87,14 +87,14 @@ class Recorders:
                     time = time.replace(')', '');
                     beg, end = time.split('-')
                     end = beg[:len(beg)-len(end)]+end
-                    files.append([rec, pov, beg, end, [e,]])
+                    files.append([rec, pov, beg, end, n, [e,]])
                 else:
-                    files[-1][4].append(e)
+                    files[-1][5].append(e)
         del entries
-        pages = len(files)/FILES_IN_PAGE+1
+        pages = (len(files)+FILES_IN_PAGE+1)/FILES_IN_PAGE
         files.sort(key = lambda f: f[2])
         # выбор файлов текущей страницы
-        files = files[(page-1)*FILES_IN_PAGE: min(len(files), page*FILES_IN_PAGE-1)] 
+        files = files[(page-1)*FILES_IN_PAGE: min(len(files), page*FILES_IN_PAGE)] 
         return render.recfiles(page, pages, files, title = self.title)
 
 

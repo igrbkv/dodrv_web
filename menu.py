@@ -5,48 +5,50 @@
 mainMenu = (
     ('Выход', (
         ('', '/logout'),)),
-    ('Лог', ( 
+    ('Лог', (
         ('', '/log'),)),
-    ('Файлы', ( 
+    ('Файлы', (
         ('Самописцы', '/files/recorders'),
         ('Аварии', '/files/emergencys'),)),
     ('Настройка', (
+        ('Поверка', '/config/checkout'),
+        ('Устройства', '/config/devices'),
         ('Доставка файлов', '/config/delivery'),
         ('Сервис', '/config/service'),
         ('Смена пароля', '/config/password'),
         ('Пользователи', '/config/users'),
-        ('Время', '/config/time'), 
-        ('Сеть', '/config/network'), 
-        ('Дискреты', '/config/discretes'), 
-        ('Аналоги', '/config/analogs'), 
+        ('Время', '/config/time'),
+        ('Сеть', '/config/network'),
+        ('Дискреты', '/config/discretes'),
+        ('Аналоги', '/config/analogs'),
         ('Регистратор', '/config/recorder'))),
     ('Состояние', (
-        ('Версия ПО', '/state/version'), 
-        ('Синхронизация', '/state/syncronization'), 
-        ('Сеть', '/state/network'), 
-        ('Фильтры', '/state/filters'), 
-        ('Дискреты', '/state/discretes'), 
-        ('Аналоги', '/state/analogs'), 
+        ('Версия ПО', '/state/version'),
+        ('Синхронизация', '/state/syncronization'),
+        ('Сеть', '/state/network'),
+        ('Фильтры', '/state/filters'),
+        ('Дискреты', '/state/discretes'),
+        ('Аналоги', '/state/analogs'),
         ('Система', '/state/system'),)),
 )
 
 userMenu = (
     ('Выход', (
         ('', '/logout'),)),
-    ('Лог', ( 
+    ('Лог', (
         ('', '/log'),)),
-    ('Файлы', ( 
+    ('Файлы', (
         ('Самописцы', '/files/recorders'),
         ('Аварии', '/files/emergencys'),)),
     ('Настройка', (
         ('Смена пароля', '/config/password'),)),
     ('Состояние', (
-        ('Версия ПО', '/state/version'), 
-        ('Синхронизация', '/state/syncronization'), 
-        ('Сеть', '/state/network'), 
-        ('Фильтры', '/state/filters'), 
-        ('Дискреты', '/state/discretes'), 
-        ('Аналоги', '/state/analogs'), 
+        ('Версия ПО', '/state/version'),
+        ('Синхронизация', '/state/syncronization'),
+        ('Сеть', '/state/network'),
+        ('Фильтры', '/state/filters'),
+        ('Дискреты', '/state/discretes'),
+        ('Аналоги', '/state/analogs'),
         ('Система', '/state/system'),)),
 )
 

@@ -16,6 +16,9 @@
 
 FTP-сервер
 Удл. Адрес Логин Пуски События Самописцы Журнал Телефон Расписание
+Задание адреса удаленного ftp-сервера не
+обязательно, будет подставлен адрес удаленного клиента, назначенный PPP.
+Адрес также может быть задан в символьном виде.
 
 
 [Применить]
@@ -34,7 +37,6 @@ phone=1234567
 schedule=13-14 18-7
 
 /etc/dodrv/smtpdelivery:
-#<smtp-address>,<tsl>,<account>,<psw>,<phone>,<schedule>,<address>,{E|I|R|L}
 <address>;{E|I|R|L|Z}
 ...
 
@@ -51,9 +53,9 @@ schedule=13-14 18-7
 где Н-начало периода в часах, К-конец периода, например:
 12-13 18-7
 5. Формат ftp-адреса:
-[ftp://]<ip_or_address>[:port][/<dir1>...[/<dirN>]]
+[ftp://][<ip_or_address_or_empty>][:port][/<dir1>...[/<dirN>]]
 в доставке соответственно:
-/dodrv/delivery/ftp/<ip_or_address>[:port][ <dir1>]...[ dirN],
+/dodrv/delivery/ftp/[<ip_or_address_or_empty>][:port][ <dir1>]...[ dirN] [phone],
 например:
 ftp://ftp.parma.spb.ru:21/recorders/r1 =>
 /dodrv/delivery/ftp/ftp.parma.spb.ru:21 recorders r1
@@ -66,6 +68,8 @@ from config import render, DEBUG_PATH
 from http import nocache
 from configobj import ConfigObj
 from re import sub
+from utils import restart_service
+from subprocess import call
 
 SSMTPCONF_PATH = DEBUG_PATH + '/etc/ssmtp/ssmtp.conf'
 REVALIASES_PATH = DEBUG_PATH + '/etc/ssmtp/revaliases'
@@ -73,19 +77,19 @@ SMTPDELIVERY_PATH = DEBUG_PATH + '/etc/dodrv/smtpdelivery'
 FTPDELIVERY_PATH = DEBUG_PATH + '/etc/dodrv/ftpdelivery'
 RECORDERDELIVERY_PATH = DEBUG_PATH + '/etc/dodrv/recorderdelivery'
 MAX_DELIVERYS = 10
-
 # FIXME 
 # 1. Проверка адресов
 # 2. Проверка расписания
 MAIL_REGEXP = '^[0-9a-zA-Z_.,@-]*$'
 FTP_REGEXP = '^[0-9a-zA-Z_.-:/]*$'
 SCHEDULE_REGEXP = '^[0-9 -]*$'
-PHONE_REGEXP = '^[TP]?[0-9#*-]+$'
+PHONE_REGEXP = '^[TP]?[0-9#*-]*$'
 
 NOT_FILLED_NOTE = '* Не заполнено'
 NO_FILES_NOTE = '* Не заданы файлы'
 NO_ADDRESS_NOTE = '* Не задан адрес'
 NOT_VALID = '* Неверное значение'
+ADDRESS_EXISTS_NOTE = '* Дублирование адреса'
 
 def scheduleValid(sched):
     tt=sched.split()
@@ -134,7 +138,7 @@ def createFtpForm(idx, args):
             checked = 'L' in args[3]),
         form.Textbox(idx + '_ftp_phone',
             form.Validator('* Длина номера не должна превышать 20 символов', 
-                lambda i: len(i) <= 20 ), value = args[4]), 
+                lambda i: len(i) <= 20 ), value = args[4], READONLY = 'ON'), 
         form.Textbox(idx + '_ftp_sched',
             form.Validator('* Длина расписания не должна превышать 20 символов',
             lambda i: len(i) <= 40),
@@ -392,14 +396,30 @@ class Delivery:
             types = getTypes(newFtpFrm, 'new_ftp')
             # обрезать "ftp://" если есть
             newFtpAdr = sub('ftp://', '', newFtpFrm['new_ftp_adr'].get_value())
-            if newFtpAdr:
+            if newFtpAdr or newFtpFrm['new_ftp_phone'].get_value():
                 if not types:
                     valid = False
                     newFtpFrm['new_ftp_adr'].note = NO_FILES_NOTE
                 else:
+                    # проверка дублирования
+                    new_adr = newFtpFrm['new_ftp_adr'].get_value()
+                    new_phone = newFtpFrm['new_ftp_phone'].get_value()
+                    print 'new_adr=', new_adr, ' new_phone=', new_phone
+                    for i in xrange(len(ftpFrms)):
+                        si = str(i)
+                        if ftpFrms[i][si + '_ftp_del'].get_value():
+                            continue
+                        adr = ftpFrms[i][si+ '_ftp_adr'].get_value()
+                        phone = ftpFrms[i][si + '_ftp_phone'].get_value()
+                        print 'adr=', adr, ' phone=', phone
+                        if adr == new_adr and phone == new_phone:
+                            valid = False
+                            newFtpFrm['new_ftp_adr'].note = ADDRESS_EXISTS_NOTE
+                            break
+
                     valid &= newFtpFrm.valid
-            elif types or newFtpFrm['new_ftp_phone'].get_value() or\
-                newFtpFrm['new_ftp_sched'].get_value():
+
+            elif types or newFtpFrm['new_ftp_sched'].get_value():
                 valid = False
                 newFtpFrm['new_ftp_adr'].note = NO_ADDRESS_NOTE
 
@@ -480,11 +500,11 @@ class Delivery:
                     (adr, login, psw, types, phone, sched))
 
             if newFtpFrm:
-                if newFtpAdr:
+                phone = newFtpFrm['new_ftp_phone'].get_value()
+                if newFtpAdr or phone:
                     login = newFtpFrm['new_ftp_login'].get_value()
                     psw = newFtpFrm['new_ftp_psw'].get_value()
                     types = getTypes(newFtpFrm, 'new_ftp')
-                    phone = newFtpFrm['new_ftp_phone'].get_value()
                     sched = newFtpFrm['new_ftp_sched'].get_value()
                     conf.write('%s;%s;%s;%s;%s;%s\n' %\
                         (newFtpAdr, login, psw, types, phone, sched))
@@ -504,5 +524,8 @@ class Delivery:
                 if adr:
                     types = getTypes(newRecFrm, 'new_recorder')
                     conf.write('%s;%s\n' % (adr, types))
+
+        # Перезапустить сервис отслеживания файлов регистрации/самописца 
+        restart_service('dlinkd')
 
         return render.completion(self.title)

@@ -7,7 +7,7 @@
     Состояние Настройка Файлы Лог Сервис
 Поменю Настройка:
     Регистратор Аналоги Дискреты ОМП Сеть Смена_пароля
-    
+
 """
 import web
 import session
@@ -30,6 +30,10 @@ urls = (
     '/config/network', 'network.Network',
     '/config/service', 'service.Service',
     '/config/delivery', 'delivery.Delivery',
+    '/config/devices', 'devices.Devices',
+    '/config/checkout', 'checkout.Checkout',
+    '/config/checkadc', 'checkout.Adc',
+    '/config/report/(.+)', 'checkout.Report',
     '/state/system', 'state.System',
     '/state/version', 'state.Version',
     '/state/system/pov/(\d+)', 'state.PovStatistic',
@@ -51,7 +55,7 @@ urls = (
 app = web.application(urls, globals())
 session.addSessions(app)
 
-if __name__ == '__main__': 
+if __name__ == '__main__':
     #web.internalerror = web.debugerror
     app.run()
 

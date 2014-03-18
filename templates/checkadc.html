@@ -1,0 +1,17 @@
+$def with (note, sig, title=None)
+$var title: $title
+
+<form action="/config/checkadc" method=POST>
+<table>
+$if note:
+    <strong class="wrong">
+    <tr>
+    <td>Ошибка</td><td>$note</td>
+    </tr></strong>
+<tr><td>ПУ:</td><td>$sig[0]</td></tr>
+<tr><td>Cигнал:</td><td>$sig[1]</td></tr>
+<tr><td>Модуль:</td><td>$sig[2]</td></tr>
+<tr><td>Подайте:</td><td><a>$sig[3]</a> и нажмите<a><button type="submit" id="form_action" value="ready" name="form_action">Готово</button></a></td></tr>
+</table>
+<p><button type="submit" id="form_action" value="skip" name="form_action">Пропустить</button></p>
+</form>

@@ -93,7 +93,7 @@ class SyncState:
             else:
                 server = serverAddress()
             err, pval = ntpqp()
-            if err or (pval['t'] == '-' and pval['reach'] == '0'):
+            if err or not pval or (pval['t'] == '-' and pval['reach'] == '0'):
                 text.append('Нет связи с ' + server +
                     '. Синхронизация невозможна.')
                 #if err:

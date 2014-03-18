@@ -1,0 +1,50 @@
+$def with (fe, fcf, pv, bbf, bcf, bff, rf, title=None)
+$var title: $title
+<form action="/config/checkout" method=POST>
+    $if fe:
+        $:disableElement('input', fcf.render()) 
+        <p>Устройства</p>
+        <table>
+        $for p in pv:
+            <tr>
+            <th><label for="$p.id">$p.description</label></th><td>$:disableElement('input', p.render())</td>        
+            </tr>
+        </table>
+        <table>
+            <td>$:disableElement('button', bbf.render())</td>
+            <td>$:bcf.render()</td>
+            <td>$:bff.render()</td>
+        </table>
+        
+    $else:
+        $:fcf.render() 
+        <p>Устройства</p>
+        <table>
+        $for p in pv:
+            <tr>
+            <th><label for="$p.id">$p.description</label></th><td>$:p.render()</td>        
+            </tr>
+        </table>
+        <table>
+            <td>$:bbf.render()</td>
+            <td>$:disableElement('button', bcf.render())</td>
+            <td>$:disableElement('button', bff.render())</td>
+        </table>
+    <p>Результаты поверки</p>
+    <table>
+        <tr>
+            <th>Дата</th><th>Тип</th><th></th>
+        </tr>
+        $for r in rf:
+            <tr>
+            <td><a href="/config/report/$r.value">$r.value[4:6]/$r.value[2:4]/$r.value[0:2] $r.value[6:8]:$r.value[8:10]:$r.value[10:12]</a></td>
+            <td>
+            $if r.value[13] == 'p':
+                Периодическая
+            $else:
+                Первичная
+            </td>
+            <td>$:r.render()</td>
+            </tr>
+    </table>
+        

@@ -15,6 +15,9 @@ $if content.title:
 <div id="header">
 <span class="logo"><a href="/" title="В начало"><img src="/static/logo_parma.png" alt=""/></a></span>
 <span class="blurb"><a>$recorderName()</a></span>
+$if userName():
+    <span class="mode"><a>Режим: $recMode()</a></span>
+    <span class="user"><a>Пользователь: $userName()</a></span>
 <div id="menuContainer">
 $#<ul>
 $# Main menu

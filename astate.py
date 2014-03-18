@@ -55,10 +55,10 @@ class AState:
             rms2 = ADCCOEF*coef2*(sum(values)/len(values))
         rms1 = coef1*rms2
         return rms1, rms2
-    
+
     def _angle(self, values, idx, deg=1):
         '''
-        Значения на периоде => 
+        Значения на периоде =>
         вектора (в комлЕксном виде) =>
         угол фазы = угол певого вектора
         '''

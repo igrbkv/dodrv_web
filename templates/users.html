@@ -12,8 +12,8 @@ $def showTableHeader():
 
 <form action="/config/users" method=POST>
     <table>
+        $:showTableHeader()
         $if ud:
-            $:showTableHeader()
             $for k, v in ud.iteritems():
                 <tr>
                 $ note = None

@@ -3,7 +3,8 @@
 
 import config
 import menu
-import session 
+import session
+from utils import recorderMode
 
 """
 class ctx():
@@ -16,20 +17,33 @@ web = web()
 """
 
 def recorderName():
-    name = config.xml['name']
-    if name:
-        return name
-    else:
-        return 'Регистратор %s' % config.xml['id']
+    return u'Регистратор ' + config.xml['id']
+
+def userName():
+    return session.getUser()
+
+def recMode():
+    mode_names = (
+        u'Работа',
+        u'Поверка',
+        u'Тесты',
+        u'Настройка',
+        u'Останов',
+        u'Выключение',
+        u'Ав. останов')
+    if config.DEBUG_PATH:
+        return mode_names[0]
+    return mode_names[recorderMode()]
+
 
 def isCurPath(path):
     return config.web.ctx.path.split('/')[1] == path.split('/')[1]
 
 def getMenu():
-    if config.web.ctx.path == '/login': 
+    if config.web.ctx.path == '/login':
         return menu.loginMenu
     if session.getUser() == 'admin':
-        return menu.mainMenu 
+        return menu.mainMenu
     else:
         return menu.userMenu
 
@@ -47,10 +61,10 @@ def getDiscrete(dev, i):
     return config.xml['device'][dev]['discrete'][str(i)]
 
 def getDevs():
-    devs = (str(i) for i in xrange(config.MAX_POV) 
-        if config.xml['device'].has_key(str(i)) and 
-            config.xml['device'][str(i)]['exists'] and 
-            config.xml['device'][str(i)]['in_use'] == 'yes') 
+    devs = (str(i) for i in xrange(config.MAX_POV)
+        if config.xml['device'].has_key(str(i)) and
+            config.xml['device'][str(i)]['exists'] and
+            config.xml['device'][str(i)]['in_use'] == 'yes')
     return devs
 
 def getFirstDev():
@@ -74,7 +88,7 @@ def getPages(page, pages):
     if not pages:
         return lst
 
-    l = [i for i in xrange(page-config.PAGES_AROUND, 
+    l = [i for i in xrange(page-config.PAGES_AROUND,
         page+config.PAGES_AROUND+1) if i > 0 and i <= pages]
 
     if l[0] != 1:
@@ -93,7 +107,7 @@ def fmtDate(date):
     Преобразование yymmddhhmmss<ms> к виду
     dd/mm/yy hh:mm:ss.ms
     '''
-    
+
     d = date[4:6] + '/' +date[2:4] + '/' + date[:2] + ' '\
         + date[6:8] + ':' + date[8:10] + ':' + date[10:12]
     if len(date) == 15:
@@ -103,9 +117,15 @@ def fmtDate(date):
 def filesInPage():
     return config.FILES_IN_PAGE
 
-def recFileName(rec, pov, start, end, ext):
-    return rec + '_' + pov + '_' + start[:6] + '(' + start[6:] + '-' +\
-            end[6:] + ')' + ext
+def disableElement(elm, strn):
+    ss = strn.split()
+    for i in xrange(len(ss)):
+        if elm in ss[i]:
+            ss.insert(i+1, 'disabled')
+            break;
+    return ' '.join(ss)
+
+
 """
 if __name__ == '__main__':
     print getMenu()

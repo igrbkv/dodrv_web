@@ -9,9 +9,9 @@
 ...
 ПП
 ...
-ОП 
+ОП
 ...
-НП 
+НП
 ...
 P
 ...
@@ -19,7 +19,7 @@ Q
 ...
 H
 
-* - текущее значение отображается синим, если меньше НГ, красным, если больше ВГи зеленым в противном случае 
+* - текущее значение отображается синим, если меньше НГ, красным, если больше ВГи зеленым в противном случае
 """
 import web
 from config import render, xml
@@ -33,7 +33,7 @@ fltNames = {'RMS':('rms', '', 'Действующее значение'), \
         'PPS': ('positive_phase_sequence', '', 'Прямая последовательность'), \
         'NPS': ('negative_phase_sequence', '', 'Обратная последовательность'), \
         'ZPS': ('zero_phase_sequence', '', 'Нулевая последовательность'), \
-        'H': ('harmonic', 'Гц', 'Гармоника'), \
+        'H': ('harmonic', '', 'Гармоника'), \
         'P': ('active_power', 'Вт', 'Активная мощность'), \
         'Q': ('reactive_power', 'Вар', 'Реактивная мощность')}
 
@@ -41,11 +41,11 @@ fltNames = {'RMS':('rms', '', 'Действующее значение'), \
 class FState:
     def _sigName(self, dev, num):
         """
-        @return имя сигнала, а если его нет, то ПОВ <dev>:<num>
+        @return имя сигнала, а если его нет, то A:<num>
         """
         n = xml['device'][dev]['analog'][num]['alias']
         if not n:
-            n = u'ПОВ ' + dev + ':' + num
+            n = u'A:' + num
         return n
 
     def GET(self, dev=''):
@@ -67,7 +67,7 @@ class FState:
         if not dev:
             dev = getFirstDev()
             if not dev:
-                return render.emptypage(title = self.title)
+                return render.emptypage(title = title)
 
         filters = dict([(n[2], []) for n in fltNames.values()])
 
@@ -86,13 +86,13 @@ class FState:
                         n += ', ' + self._sigName(dev, a[fltXmlName]['id_b']) + \
                             ', ' + self._sigName(dev, a[fltXmlName]['id_c'])
                     lst.append(n)
-                    unit = fltNames[l[0]][1] 
+                    unit = fltNames[l[0]][1]
                     if not unit:
                         unit = xml['ADCs'][a['ADC']]['unit'].encode('utf-8')
                     bottom = a[fltXmlName]['analog_emergency']['bottom_threshold']
                     top = a[fltXmlName]['analog_emergency']['top_threshold']
                     value = toSI(l[2]) + unit
-                    
+
                     # <bottom_threshold>
                     if bottom:
                         lst.append(toSI(bottom)+unit)
@@ -101,7 +101,7 @@ class FState:
 
                     # <value_lst>
                     vl=[ '', '', '']
-                    if bottom and float(l[2] > float(bottom)):
+                    if bottom and float(l[2] < float(bottom)):
                         vl[0] = value
                     elif top  and float(l[2]) > float(top):
                         vl[2] = value
@@ -115,7 +115,7 @@ class FState:
                     else:
                         lst.append('')
 
-                    filters[fltNames[l[0]][2]].append(lst) 
+                    filters[fltNames[l[0]][2]].append(lst)
 
             except:
                 #FIXME Сообщение об ошибке в syslog

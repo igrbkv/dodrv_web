@@ -2,9 +2,9 @@
 
 import web
 import utils, formatting
+DEBUG_PATH = 'debug'
 import configxml
 
-DEBUG_PATH = 'debug'
 
 CONFIG_XML = DEBUG_PATH + '/etc/dodrv/filters.conf'
 PASSWD_FILE_PATH = DEBUG_PATH + '/etc/dodrv/htpasswd'
