@@ -14,6 +14,7 @@ import syslog
 from os import listdir
 from htpasswd import htpasswd
 from http import nocache
+from crypt import crypt
 
 
 def online(login):
@@ -92,7 +93,7 @@ class Password:
         if cpf.valid:
             un = session.getUser()
             uv = htpasswd.users[un]
-            htpasswd.users[un] = (cpf.newPsw.value, uv[1], uv[2])
+            htpasswd.users[un] = (crypt(cpf.newPsw.value, 'IB'), uv[1], uv[2])
             htpasswd.save()
             return render.completion(self.title, 'Новый пароль сохранен')
         else:
@@ -103,7 +104,7 @@ class Password:
 
     def GET(self):
         nocache()
-        
+
         cpf = changePasswordForm()
         return render.form(cpf, self.title)
 

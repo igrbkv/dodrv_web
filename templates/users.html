@@ -1,18 +1,20 @@
 $def with (ud, nuf, title=None)
 $var title: $title
 
-$def showTableHeader():
+$def showTableHeader(psw):
     <tr>
-    <th class="checkbox">Удалить</th>
+    $if not psw:
+        <th class="checkbox">Удалить</th>
     <th id="user">Пользователь</th>
-    <th id="password">Пароль</th>
+    $if psw:
+        <th id="password">Пароль</th>
     <th id="info">Доп. инфо</th>
     <th id="err"></th>
     </tr>
 
 <form action="/config/users" method=POST>
     <table>
-        $:showTableHeader()
+        $:showTableHeader(False)
         $if ud:
             $for k, v in ud.iteritems():
                 <tr>
@@ -20,15 +22,17 @@ $def showTableHeader():
                 $for u in v.inputs:
                     $if u.is_hidden():
                         <td>$u.name</td>
-                    $else:
+                    $elif u.name[-3:] == 'psw':
+                        <td>$:disableElement('input', u.render())</td>
+                    $else: 
                         <td>$:u.render()</td>
                         $ note = note or u.note
                 <td><strong class="wrong">$note</strong></td>
                 </tr>
         $if nuf:
             <tr><td><b>Новый пользователь</b></td></tr>
+            $:showTableHeader(True)
             <tr>
-                <td></td>
                 $ note = None
                 $for u in nuf.inputs:
                     <td>$:u.render()</td>

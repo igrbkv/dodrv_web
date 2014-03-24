@@ -33,7 +33,10 @@ def recMode():
         u'Ав. останов')
     if config.DEBUG_PATH:
         return mode_names[0]
-    return mode_names[recorderMode()]
+    rm = recorderMode()
+    if rm == -1:
+        return u'Ошибка'
+    return mode_names[rm]
 
 
 def isCurPath(path):

@@ -404,14 +404,12 @@ class Delivery:
                     # проверка дублирования
                     new_adr = newFtpFrm['new_ftp_adr'].get_value()
                     new_phone = newFtpFrm['new_ftp_phone'].get_value()
-                    print 'new_adr=', new_adr, ' new_phone=', new_phone
                     for i in xrange(len(ftpFrms)):
                         si = str(i)
                         if ftpFrms[i][si + '_ftp_del'].get_value():
                             continue
                         adr = ftpFrms[i][si+ '_ftp_adr'].get_value()
                         phone = ftpFrms[i][si + '_ftp_phone'].get_value()
-                        print 'adr=', adr, ' phone=', phone
                         if adr == new_adr and phone == new_phone:
                             valid = False
                             newFtpFrm['new_ftp_adr'].note = ADDRESS_EXISTS_NOTE

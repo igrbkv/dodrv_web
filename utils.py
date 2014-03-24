@@ -113,26 +113,29 @@ def readShmem(dev):
 
     return lines
 
-def recorderMode(value=''):
+def recorderMode(value=None):
     '''
     @param value если задан, записывается в /dev/shm/recorder_mode
     @return предыдущее значение /dev/shm/recorder_mode
     '''
     fmt = '=i'
-    name = '/recorder_mode'
-    mem = posix_ipc.SharedMemory(name)
-    sem = posix_ipc.Semaphore(name)
-    # антиблокиратор на всякий случай 
-    sem.acquire(1.0)
-    buf = read(mem.fd, struct.calcsize(fmt))
-    mode = struct.unpack(fmt, buf)
-    if value:
-        lseek(mem.fd, 0, 0)
-        write(mem.fd, struct.pack(fmt, value))
-    sem.release()
-    close(mem.fd)
-    sem.close()
-    return mode
+    try:
+        mem = posix_ipc.SharedMemory('/recorder_mode')
+        sem = posix_ipc.Semaphore('/wdog')
+        # антиблокиратор на всякий случай 
+        sem.acquire(1.0)
+        buf = read(mem.fd, struct.calcsize(fmt))
+        mode = struct.unpack(fmt, buf)
+        if value != None:
+            lseek(mem.fd, 0, 0)
+            write(mem.fd, struct.pack(fmt, value))
+        sem.release()
+        close(mem.fd)
+        sem.close()
+        return mode[0]
+    except:
+        pass
+    return -1
 
 
 prefixes = [('', ''), ('k', 'к'), ('M', 'М'), ('G', 'Г'), ('T', 'Т'), ('P', 'П'), ('E', 'З'), ('f', 'ф'), ('n', 'н'), ('u', 'мк'), ('m', 'м')]

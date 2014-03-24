@@ -14,6 +14,7 @@
 '''
 
 from config import PASSWD_FILE_PATH
+from crypt import crypt
 
 class Htpasswd:
     users = {}
@@ -22,7 +23,7 @@ class Htpasswd:
         self._load()
 
     def _load(self):
-        self.users['admin'] = ('admin', '', '')
+        self.users['admin'] = (crypt('admin', 'IB'), '', '')
         try:
             with open(self.path, 'r') as f:
                 lst = f.readlines()
@@ -47,7 +48,7 @@ class Htpasswd:
             f.writelines(lst)
 
     def userValid(self, login, psw):
-        return login in self.users.keys() and self.users[login][0] == psw
+        return login in self.users.keys() and self.users[login][0] == crypt(psw, self.users[login][0])
 
 htpasswd = Htpasswd(PASSWD_FILE_PATH)
 

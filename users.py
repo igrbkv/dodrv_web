@@ -10,6 +10,7 @@ import web
 from web import form
 from config import render, MAX_USERS
 from htpasswd import htpasswd
+from crypt import crypt
 
 REGEXP = '^[0-9a-zA-Z_]*$'
 
@@ -17,10 +18,6 @@ def createUserForm(name, psw, info):
     uf = form.Form(
         form.Checkbox(name + '_del', value = 'value', checked = False),
         form.Hidden(name),
-        form.Textbox(name + '_psw', 
-            form.Validator('* Длина пароля не должна превышать 8 символов', lambda i: len(i) <= 8),
-            form.regexp(REGEXP, '* Недопустимые символы в пароле'),
-            value = psw),
         form.Textbox(name + '_info', 
             form.Validator('* Длина информационного поля не должна превышать 30 символов', lambda i: len(i) <= 30 ),
              value = info))
@@ -84,15 +81,15 @@ class Users:
                 del users[n]
         for k, f in users.iteritems():
             # запись изменений    
-            psw = f[k + '_psw'].get_value()
             info = f[k + '_info'].get_value()
-            if htpasswd.users[k] != (psw, '', info):
-                htpasswd.users[k] = (psw, '', info)
+            if htpasswd.users[k][2] != info:
+                htpasswd.users[k] = (htpasswd.users[k][0], '', info)
                 save = True
         if newUser:
             nu = newUser['new_user'].get_value()
             if nu:
-                htpasswd.users[nu] = (newUser['psw_new_user'].get_value(), '', newUser['info_new_user'].get_value())
+                htpasswd.users[nu] = (
+                    crypt(newUser['psw_new_user'].get_value(), 'IB'), '', newUser['info_new_user'].get_value())
                 save = True
 
         if save:
